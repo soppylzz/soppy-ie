@@ -1,0 +1,27 @@
+[
+  {
+    "name":"slidev-theme-cqupt",
+    "url":"https://github.com/soppylzz/slidev-theme-cqupt",
+    "desc":"slidev学术主题 | 进度-`99%`"
+  },
+  {
+    "name":"nouze",
+    "url":"https://github.com/soppylzz/nouze",
+    "desc":"自然语言翻译网站 | 进度-`0%`"
+  },
+  {
+    "name":"milize",
+    "url":"https://github.com/soppylzz/milize",
+    "desc":"cssinjs工具库 | 进度-`80%`"
+  },
+  {
+    "name":"vladilena",
+    "url":"https://github.com/soppylzz/vladilena",
+    "desc":"vue3组件库 | 进度-`0%`"
+  },
+  {
+    "name":"ut-code",
+    "url":"https://github.com/soppylzz/ut-code",
+    "desc":"neo代码编辑器 | 进度-`0%`"
+  }
+]
