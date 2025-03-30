@@ -1,0 +1,77 @@
+name: hexo release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        description: Semver version to bump
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      dry-run:
+        type: boolean
+        description: Perform dry-run
+        default: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: cache dependencies
+        id: cache-dependencies-release
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+          key: ${{ runner.os }}-release-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-release-${{ env.cache-name }}-
+            ${{ runner.os }}-release-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-dependencies-release.outputs.cache-hit != 'true' }}
+        name: list the state of node modules
+        continue-on-error: true
+        run: |
+          echo 'release-modules-list'
+          npm list
+
+      - name: install dependencies
+        run: |
+          npm install
+          npm add hexo-cli -g
+
+      - name: release
+        run: |
+          npm run release ${{ github.event.inputs.bump }}${{ github.event.inputs.dry-run == 'true' && ' -- --dry-run' || '' }}
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
