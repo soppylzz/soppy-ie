@@ -1,11 +1,11 @@
 ---
-title: 论文阅读：基于Sentinel-2的对象化DTW分类
+title: 论文阅读：使用Sentinel-2进行基于对象的DTW作物分类
 date: 2025-03-30 21:26:08
 tags:
-  - OBIA
+  - Sentinel-2
   - DTW
-  - time-series
-  - sentinel-2
+  - OBIA
+  - SITS
   - seg-of-SITS
 categories:
   - 遥感论文
@@ -15,29 +15,23 @@ categories:
 
 | 属性       | 详细信息                                                     |
 | ---------- | ------------------------------------------------------------ |
-| **标题**   | 🔬 *Object-Based Time-Constrained Dynamic Time Warping Classification of Crops Using Sentinel-2*<br>🔬 基于 Sentinel-2 的作物对象化时间约束动态时间规整分类 |
-| **期刊**   | 📚︎ *Remote sensing*                                           |
-| **分区**   | 🌍 地球科学2区 [CAS]                                          |
+| **标题**   | 🔬 *[Object-Based Time-Constrained Dynamic Time Warping Classification of Crops Using Sentinel-2](https://www.mdpi.com/2072-4292/11/10/1257)*<br>🔬 基于对象基时序约束动态时间规整的Sentinel-2作物分类方法 |
+| **期刊**   | 📚︎ *Remote sensing* \| 🌍 地球科学2区 \[TOP\]                  |
 | **日期**   | ⏲️ 2019-05-27                                                 |
-| **作者**   | [Ovidiu Csillik](https://scholar.google.com/citations?hl=zh-CN&user=NKeQolgAAAAJ) |
-| **关键词** | `agricultural mapping`、`DTW`、`eCognition`、`land use/land cover`、`object-based`、`satellite time series` |
-| **链接**   | [Online](https://www.mdpi.com/2072-4292/11/10/1257)          |
-
-
+| **作者**   | 👨‍🔬 [Ovidiu Csillik](https://scholar.google.com/citations?hl=zh-CN&user=NKeQolgAAAAJ) |
+| **关键词** | `agricultural mapping`、`DTW`、`eCognition`、`land use/land cover`、`object-based image analysis`、`satellite image time series` |
 
 > 一句话解读：该论文分析了单波段DTW与多波段DTW对农作物土地利用分类的影响；
 
-
-
 ## 总结
 
-1. 使用时序影像堆叠进行时序对象分割；
-2. 使用DTW及其变种计算物候相似度特征（待分类对象对各个类别计算DTW距离，然后与参考距离相减）;
-3. 对DTW距离进行回归分析，解释UA & PA；
+1. 使用**时序影像堆叠**进行时序对象分割；
+2. 使用DTW及其改进算法计算物候 **不相似度** | `dissimilarity` 特征（待分类对象对各个类别计算DTW距离，然后与参考距离相减）;
+3. 对DTW距离进行回归分析，解释`UA` & `PA`；
 
 ## 引言
 
-### 1. 书写逻辑：
+### 1. 写作逻辑：
 
 1. 背景引入：人类活动对地球环境影响 → 农业扩张的重要性 → 卫星遥感监测的必要性；
 2. 技术发展现状：现有卫星数据特点 → **时间序列分析挑战** → 传统方法局限性；
@@ -73,9 +67,10 @@ DTW的应用：
 
 | 属性 | 详细信息                                                     |
 | ---------- | ------------------------------------------------------------ |
-| 标题 | 🔬 *Sentinel-2 Cropland Mapping using Pixel-based and Object-based Time-Weighted Dynamic Time Warping Analysis* <br/>🔬 利用基于像素和基于对象的DTW分析进行 Sentinel-2 农田测绘 |
+| **标题**   | 🔬 *[Sentinel-2 Cropland Mapping using Pixel-based and Object-based Time-Weighted Dynamic Time Warping Analysis](https://www.sciencedirect.com/science/article/pii/S0034425717304686)*<br>🔬 基于像素和对象的时间加权动态时间规整分析进行Sentinel-2农田制图 |
+| **相关文章** | 📓 [论文阅读：使用Sentinel-2进行基于对象与基于像素的DTW作物分类](https://soppylzz.github.io/soppy-ie/2025/04/02/dtw-pbia-obia-cropland/) |
 
-本文在此基础上进行了如下创新：1）将单波段分析扩展到**多波段时间约束DTW**；2）测试不同时间约束的DTW；3）讨论了DTW相似度值在<u>理解分类错误</u>和<u>评估分析过程中的误差传播方面</u>的含义。
+本文在此基础上进行了如下创新：1）将单波段分析扩展到**多波段时间约束DTW**；2）测试不同时间约束的DTW；3）讨论了DTW不相似度值在<u>理解分类错误</u>和<u>评估分析过程中的误差传播方面</u>的含义。
 
 ## 材料与方法
 
@@ -128,7 +123,11 @@ DTW的应用：
 
 ## 结果
 
-论文结果板块遵循如下顺序：1）分割结果分析；2）OAs分析；3）PA&UA分析；4）**DTW相似度分析**；5）误差/不确定性分析；我只介绍一下我认为重要的结果分析部分；
+论文结果板块遵循如下顺序：1）分割结果分析；2）OAs分析；3）PA&UA分析；4）**DTW不相似度分析**；5）误差/不确定性分析；我只介绍一下我认为重要的结果分析部分；
+
+<img src="https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/remotesensing-11-01257-g008-1744079211517.png" alt="remotesensing-11-01257-g008" style="max-width: 500px" />
+
+<center>figure 8. (a) DTW30+TA1, (b) 多波段DTW+TA1, (c) DTW45+TA2, (d) 多波段DTW30+TA2分类结果图</center>
 
 ### 1. OA、PA & UA：
 
@@ -147,13 +146,22 @@ DTW的应用：
 
 关于是否屏蔽掉与给定地物类别的DTW距离没有<u>显著最小值</u>得待分类对象，以更好的可视化分类结果，这是个可讨论问题；如果假设可行，**这是一种通过设置阈值进行未分类元素屏蔽得方法🔥**；
 
-### 2. DTW相似度分析：
+### 2. DTW不相似度分析：
+
+论文为分类结果图生成了相应的 **不相似度** | `dissimilarity` 图，该图可以看作分类的<u>不确定性图</u>，这是使用DTW算法的论文中常见的分析方式；
+
+* **不相似度**：<u>已分类对象</u>与**分类结果的参考物候**💥的DTW矩阵右下角的最终值，即对象与分类结果的DTW距离值；
+* **归一化**：论文采用了min-max归一化方法归一化了DTW距离值，消除不同波段或时间约束下的<u>量纲差异</u>💥，便于跨条件比较。
+
+<img src="https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/remotesensing-11-01257-g009-1744078874337.png" alt="remotesensing-11-01257-g009" style="max-width: 500px" />
+
+<center>figure 9. (a) DTW30+TA1, (b) 多波段DTW+TA1, (c) DTW45+TA2, (d) 多波段DTW30+TA2归一化不相似性图</center>
 
 尽管作者是将未分类对象分类到DTW距离最小的地物类别，但作者还是记录了<u>待分类对象的分类后</u>与<u>各个类别</u>的DTW距离散点图。作者根据这个散点图矩阵拟合了个线性曲线，并求取$R^2$，以讨论两个地物类别间是否有关联性；
 
-* 例如：下图中Grass与Cotton的$R^2=0.86$较高，因此Grass与Cotton间容易混淆；当然，高$R^2$能解释低UA & PA，但低UA & PA不一定导致$R^2$较低，Grass与Cotton的例子便很好的说明了这一点；
+* 例如：下图中Grass与Cotton的$R^2=0.86$较高，因此Grass与Cotton间容易混淆；当然，高$R^2$能解释低`UA` & `PA`，但低`UA` & `PA`不一定导致$R^2$较低，Grass与Cotton的例子便很好的说明了这一点；
 
-<img src="https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/dtw_analysis-1743411795499.png" alt="dtw_analysis" style="max-height: 500px" />
+<img src="https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/dtw_analysis-1743411795499.png" alt="dtw_analysis" style="max-width: 500px" />
 
 <center>figure 11. 德克萨斯州单波段DTW45的每个类别计算得到的DTW距离散点图</center>
 
@@ -163,13 +171,13 @@ DTW的应用：
 
 * **针对时序遥感数据的分割**（segementation of SITS）：在分割过程中引入多时相图像，允许通过时间来划分同质对象。将多分辨率分割与超像素结合可以帮助减少分割过程所需资源和时间；
 
-    文中直接使用无云图像进行分割，其实还可以使用其他选择图像的方法来优化分割流程；
+    <u>文中直接使用无云图像进行分割</u>💥，其实还可以使用其他选择图像的方法来优化分割流程；
 
-* **带时间约束的DTW**：在使用DTW时引入**合适**时间约束是很重要的，<u>延迟时间</u>应当既不<u>过于严格</u>，也不允许在计算 DTW 矩阵时<u>过于自由</u>，**从而避免了作物匹配的不一致性**。
+* **带时间约束的DTW**（TWDTW）：在使用DTW时引入**合适**时间约束是很重要的，<u>延迟时间</u>应当既不<u>过于严格</u>，也不允许在计算 DTW 矩阵时<u>过于自由</u>，**从而避免了作物匹配的不一致性**。
 
 * **DTW的优势**：
 
-    * 对参考样本数量的敏感性不高，文中使用了3个参考样本点足矣；证明过程请参考：[前置论文](#2-具体内容：)；
+    * 对参考样本数量的敏感性不高，文中使用了3个参考样本点足矣；请参考：[前置论文](#2-具体内容：)；
 
 * **未来发展方向**：1）多年生作物识别；2）更改DTW距离公式；3）使用时间约束和变形窗口提升DTW计算效率；
 

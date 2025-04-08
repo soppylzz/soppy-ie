@@ -12,7 +12,6 @@ soppy-ie即soppyの家，我这项目的`README.md`中只记录我常用的`hexo
 
     ```cmd
     hexo new [layout] [article_title]
-    # hexo new page xxxx
+    # hexo new post xxxx
+    # hexo new about xxxx
     ```
-
-    
