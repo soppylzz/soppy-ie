@@ -84,7 +84,7 @@ categories:
 
 `git push`是Git中用于将**本地仓库的提交上传到远程仓库**的命令，是远程协作开发中的核心命令之一。我们可以以如下形式使用该命令：
 
-* <span style='color: crimson'>**`git push`**</span>：
+* <span style='color: pink'>**`git push`**</span>：
 
     将<u>当前分支</u>推送到远程仓库的 *<u>特定分支</u>* ；我们通过配置`push.default`参数，来控制`git push`默认推送行为：
 
@@ -96,9 +96,9 @@ categories:
     | `upstream`<br/>`tracking`                                    | 推送当前分支到它的`upstream`分支（即我们用`-u`设置过的远程分支）。 |
     | `nothing`                                                    | 默认不推送任何分支，需要我们<u>每次手动指定</u>。            |
 
-* **`git push <remote> <lo_branch>`**：推送`<lo_branch>`推送到远程仓库。
+* **`git push <remote> <lo_branch>`**：推送`<lo_branch>`推送到远程仓库。推送`<lo_branch>`时，需要注意的是——<span style='color: pink'>该命令默认`upstream`为`<remote>/<lo_branch>`，而不是其追踪的远程分支</span>。
 
-* **`git push <remote> <re_branch>:<lo_branch>`**：
+* <span style='color: cyan'>**`git push <remote> <re_branch>:<lo_branch>`**</span>：
 
     这是 `git push`的完整使用方式。除了支持定制化的推送操作，该命令还可用于**删除远程分支**：`git push <remote> :<lo_branch>`等价于`git push <remote> --delete <lo_branch>`。
 
@@ -111,16 +111,16 @@ categories:
 | **<span style='white-space:nowrap'>`-u`/`--set-upstream`</span>** | 将本地分支与远程分支建立跟踪关系，便于以后直接使用`git push`、`git pull`和`git fetch` |
 | `--all`                                                      | 推送所有本地分支（不推荐在多人协作下使用）                   |
 | **`--tags`**                                                 | 推送所有本地的Git标签`tag`到远程                             |
-| <span style='color: crimson'>**`-f`/`--force`**</span>       | **强制推送**，覆盖远程分支的历史；<br/>当我们修改了本地提交历史，远程与本地存在**历史冲突**，需要使用此选项推送到远程仓库 |
+| <span style='color: pink'>**`-f`/`--force`**</span>          | **强制推送**，覆盖远程分支的历史；<br/>当我们修改了本地提交历史，远程与本地存在**历史冲突**，需要使用此选项推送到远程仓库 |
 | **`--force-with-lease`**                                     | 更安全的强推，避免覆盖他人提交（**推荐**）                   |
-| `--delete`                                                   | 删除<u>远程分支</u>或<u>标签</u>                             |
+| <span style='color: pink'>**`--delete`**</span>              | 删除 ***远程分支*** 或 ***标签***                            |
 | `--dry-run`                                                  | 模拟推送，不实际更改远程仓库                                 |
 | `-v`/`--verbose`                                             | 输出详细信息                                                 |
 | `--mirror`                                                   | 推送所有`refs`，常用于仓库备份或迁移                         |
 
 #### ⬇️ 仓库拉取
 
-我们可以使用`git fetch`命令从远程仓库获取最新的数据（分支、标签、提交等），这些数据只会被拉取到本地的远程分支上，<span style='color: steelblue'>**需要我们手动合并到本地分支上**</span>。我们可以以如下命令形式使用该命令：
+我们可以使用`git fetch`命令从远程仓库获取最新的数据（分支、标签、提交等），这些数据只会被拉取到本地的远程分支上，<span style='color: cyan'>**需要我们手动合并到本地分支上**</span>。我们可以以如下命令形式使用该命令：
 
 * **`git fetch <remote>`**：使用该命令获取`<remote>`仓库的 <u>*所有远程分支*</u>、<u>*标签*</u>、<u>*引用*</u> 等内容；
 * **`git fetch <remote> <lo_branch>`**：只拉取`<lo_branch>`追踪的远程分支的更新内容；
@@ -140,7 +140,7 @@ categories:
 
 当我们使用`git fetch`拉取完远程仓库数据后，还需要手动执行`git merge`合并本地仓库内容与远程仓库拉取下来的内容。该流程提供了更细致的合并控制，但操作上相对繁琐耗时。此时，可使用`git pull`命令一次性完成**拉取与合并**，该命令适用于更简单、自动化的场景。
 
-同`git push`类似，<span style='color: steelblue'>`git pull`也可以用`git config`设置其**默认处理方式**</span>。可供设置的配置项有：`pull.rebase`与`pull.ff`。
+同`git push`类似，<span style='color: cyan'>`git pull`也可以用`git config`设置其**默认处理方式**</span>。可供设置的配置项有：`pull.rebase`与`pull.ff`。
 
 其中，`pull.rebase`配置项的可选值如下：
 
@@ -168,7 +168,7 @@ categories:
 | **`--ff-only`**                                | 合并策略 | 仅允许 **快进合并** \| `fast forward` ，不允许需要合并的场景 |
 | `--no-ff`                                      | 合并策略 | 即使可以<u>快进合并</u>，也强制生成一个`merge commit`，便于保留分支合并记录 |
 | `--no-commit`                                  | 合并策略 | 合并后不自动创建提交，我们**可以手动检查合并结果**、修改后再提交 |
-| **`--squash`**                                 | 合并策略 | 把拉取的更改<span style='color: steelblue'>**压缩成一个提交并合并**</span>进来，不保留每个单独的提交记录<br/>这只是合并更改，<u>需要我们手动提交</u> |
+| **`--squash`**                                 | 合并策略 | 把拉取的更改<span style='color: cyan'>**压缩成一个提交并合并**</span>进来，不保留每个单独的提交记录<br/>这只是合并更改，<u>需要我们手动提交</u> |
 | <span style='color: gray'>`--depth <n>`</span> | 拉取控制 | 只获取最近的`n`个提交记录                                    |
 | `--tags`                                       | 拉取控制 | **<u>*同时*</u> 拉取标签**                                   |
 | `--all`                                        | 拉取控制 | 拉取并合并所有远程仓库                                       |
@@ -266,6 +266,56 @@ Host gitlab.com
 * `IdentitiesOnly yes`：告诉 *SSH* 只使用指定的密钥，而不尝试默认密钥或`ssh-agent`中的其他密钥。
 
 我们也可以使用`ssh agent`管理私钥并简化 *SSH* 身份验证，在这里就不过多介绍，详见：[终端笔记：SSH]()。
+
+[<span style='color: cyan'>**补充**</span>] 前面我们已经简单介绍了如何给Github配置**SSH keys**，下面我们通过进行实际配置，进一步熟悉一下配置过程。首先，我们在命令行执行`ssh-keygen -t ed25519 -C "<your>@<email>.com"`命令。此时，我们需要交互式地在命令行填写相关信息：`savepath`、`passphrase`
+
+* **`savepath`**：我们可以<u>交互式</u>指定SSH密钥对的存储位置，也可以使用`-f`选项指定；SSH的默认存储位置为：
+
+    | Windows                   | macOS     |
+    | ------------------------- | --------- |
+    | `C:\User\<username>\.ssh` | `~/.ssh/` |
+
+* **`passphrase`**：类似于`gpg`的`passphrase`同样的使用方法，当我们使用SSH协议需要使用**密钥**进行通信时，`ssh`都会要求我们输入`passphrase`来访问**密钥**；
+
+以下是命令行执行结果：
+
+```bash
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (C:\Users\lzz/.ssh/id_ed25519):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in C:\Users\lzz/.ssh/id_ed25519
+Your public key has been saved in C:\Users\lzz/.ssh/id_ed25519.pub
+The key fingerprint is:
+SHA256:<pub_fp> your@email.com
+The key's randomart image is:
++--[ED25519 256]--+
+|   o . .*o=.     |
+|  * +  = X o     |
+|Eo * o  B =      |
+|o + . .  o       |
+|.. +    S o      |
+|o o +  o +       |
+|.= = .. .        |
+|= = oo           |
+|.+o=o.o.         |
++----[SHA256]-----+
+```
+
+我们将**公钥**添加至Github，然后可以使用`ssh -T git@github.com`测试是否配置成功；需要注意，这里的`-T`是`Disable pseudo-terminal allocation`—— **禁用伪终端分配**的意思。也就是说，它告诉SSH：**不要给这次连接分配一个交互式shell**。
+
+在我们第一次连接Github时，SSH会在本地保存Github端的**公钥指纹**，在保存之前`ssh`会要求我们进行验证其是否正确。我们可以前往**GitHub 官方文档**的[GitHub's SSH key fingerprints](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)进行验证。以下是命令行执行结果：
+
+```bash
+The authenticity of host 'github.com (20.205.243.166)' can't be established.
+ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Hi soppylzz! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+执行完成后，我们可以在`~/.ssh`文件夹下找到`known_hosts`、`known_hosts.old`。这是**用于记录你曾连接过的主机的公钥指纹的文件**，它的每一行记录：`<HostName> <crypto_algorithm> <pub_fp>`。
 
 #### 🗝️ GPG Keys
 
