@@ -31,8 +31,8 @@ categories:
 | `-d <branch>`                                                | **安全删除**已合并到当前分支的分支                           |
 | `-D <branch>`                                                | **强制删除**分支，无论是否合并                               |
 | `-m <branch>`                                                | **安全**重命名分支及其`reflog`，如果目标分支名已存在，<br/>则会**报错并拒绝操作** |
-| `-M <branch>`                                                | **强制**重命名分支及其`reflog`，如果目标分支名已存在，<br/>则会<span style='color: crimson'>**覆盖原有分支**</span> |
-| **`--track <local> <remote>`**                               | 创建一个新的分支，并为其指定其跟踪的远程分支<br/>当不使用`--track`指定创建分支对应的`<remote>`分支时，系统会**自动指定**`origin/<local>`为远程分支 |
+| `-M <branch>`                                                | **强制**重命名分支及其`reflog`，如果目标分支名已存在，<br/>则会<span style='color: pink'>**覆盖原有分支**</span> |
+| <span style='color: cyan'>**`--track <local> <remote>`**</span> | 创建一个新的分支，并为其指定其跟踪的远程分支<br/>当不使用`--track`指定创建分支对应的`<remote>`分支时，系统会**自动指定**`origin/<local>`为远程分支 |
 | **`--no-track <local>`**                                     | 创建分支时**不跟踪远程分支**                                 |
 
 Git有一套独特的远程仓库同步方法，当我们使用`push`或`clone`与远程仓库交互时，Git的本地分支`local`会与其对应的远程分支`origin/local`交互。我们在创建本地分支时，使用`--track`命令可以指定与其对应的远程分支，以便我们个性化的与远程仓库交互。
@@ -50,11 +50,11 @@ error: cannot delete branch '<branch>' used by worktree
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `-a`/`--all`                                                 | 显示所有分支，包括**本地**和**远程分支**                     |
 | `-r`/`--remotes`                                             | 仅显示**远程分支**                                           |
-| `-v`/`--verbose`                                             | 显示**本地**分支的详细信息，包括：<br/>`<branch_name>`、`<latest_commit_id>`和`<latest_commit_msg>` |
-| `-vv`                                                        | 显示**本地**和**远程**分支的详细信息                         |
-| <span style='white-space: nowrap'>`--merged`/`--no-merged`</span> | 控制是否列出已合并到**当前分支**的分支                       |
+| <span style='color: cyan'>`-v`/`--verbose`</span>            | 显示**本地**分支的详细信息，包括：`<branch_name>`、`<latest_commit_id>`和`<latest_commit_msg>` |
+| <span style='color: cyan'>`-vv`</span>                       | 显示**本地**和**远程**分支的详细信息。相较于`-v`选项，该选项可以显示本地分支追踪的远程分支 |
+| `--merged`/`--no-merged`                                     | 控制是否列出已合并到**当前分支**的分支                       |
 | `-l`/`--list <pattern>`                                      | 列出满足**匹配模式**的分支<br/>例如：执行`git branch -l "dev-*"`，Git会列出符合`dev-*`匹配模式的**分支** |
-| `--contains <commit>`<br/>`--no-contains <commit>`           | 控制是否列出包含**指定提交**的分支                           |
+| `--contains <commit>`<br/><span style='white-space: nowrap'>`--no-contains <commit>`</span> | 控制是否列出包含**指定提交**的分支                           |
 
 #### 📦️ `git stash`
 
@@ -68,7 +68,7 @@ error: cannot delete branch '<branch>' used by worktree
     | -------------------------- | ------------------------------------------------------------ |
     | `-m`/`--message`           | 保存时添加说明信息，便于在还原缓存时识别                     |
     | `-u`/`--include-untracked` | 保存**未跟踪**的文件（不包括被`.gitignore`忽略掉的文件）     |
-    | `-k`/`--keep-index`        | 保存时保留**暂存区**内容，`git add`添加到暂存区的数据不会被还原，仅缓存**工作目录的更改**。<span style='color: steelblue'>这里的`index`就是暂存区的另一种表示</span> |
+    | `-k`/`--keep-index`        | 保存时保留**暂存区**内容，`git add`添加到暂存区的数据不会被还原，仅缓存**工作目录的更改**。<span style='color: cyan'>这里的`index`就是暂存区的另一种表示</span> |
     | `-a`/`--all`               | 保存所有文件变动以及**所有忽略/未跟踪**文件                  |
     | `-p`/`--patch`             | **交互式选择**要保存的内容（类似`git add -p`）               |
 
@@ -78,29 +78,29 @@ error: cannot delete branch '<branch>' used by worktree
 
     显示指定缓存的**文件变动摘要**，`<stash>`默认为`stash@{0}`，常用选项如下：
 
-    | 选项                       | 说明                                                         |
-    | -------------------------- | ------------------------------------------------------------ |
-    | `-p`/`--patch`             | 展示具体的代码行差异（类似`git diff`）                       |
-    | `-a`/`--all`               | 显示所有文件的代码行差异                                     |
-    | `-u`/`--include-untracked` | 存储时使用了`-u`或`-a`选项保存了**未跟踪文件**，此选项会显示这些文件的差异 |
+    | 选项                                                         | 说明                                                         |
+    | ------------------------------------------------------------ | ------------------------------------------------------------ |
+    | `-p`/`--patch`                                               | 展示具体的代码行差异（类似`git diff`）                       |
+    | `-a`/`--all`                                                 | 显示所有文件的代码行差异                                     |
+    | <span style='white-space: nowrap'>`-u`/`--include-untracked`</span> | 存储时使用了`-u`或`-a`选项保存了**未跟踪文件**，此选项会显示这些文件的差异 |
 
 * **`git stash apply`**：
 
     该命令用于将**保存的文件变动**恢复到当前工作目录，但不同于`git stash pop`，该命令**不会删除存储条目**，常用选项如下：
 
-    | 选项      | 说明                             |
-    | --------- | -------------------------------- |
-    | `--index` | 恢复存储时，保留**暂存区**的状态 |
-    | `--quiet` | 静默模式，不显示操作信息         |
+    | 选项          | 说明                             |
+    | ------------- | -------------------------------- |
+    | **`--index`** | 恢复存储时，保留**暂存区**的状态 |
+    | `--quiet`     | 静默模式，不显示操作信息         |
 
 * **`git stash pop`**：
 
     该命令用于**恢复并删除**暂存栈顶的**最新保存的文件变动**，常用选项如下：
 
-    | 选项        | 说明                     |
-    | ----------- | ------------------------ |
-    | `--index`   | 恢复暂存区的 staged 状态 |
-    | `stash@{n}` | 指定恢复特定位置的 stash |
+    | 选项          | 说明                             |
+    | ------------- | -------------------------------- |
+    | **`--index`** | 恢复存储时，保留**暂存区**的状态 |
+    | `stash@{n}`   | 指定恢复特定位置的`stash`        |
 
     需要注意的是，`git stash`应用缓存时也有可能出现**冲突**，如果出现冲突或者其他事件，都会打断`git stash pop`的自动删除`stash`任务，这时需要我们手动完成后续操作。
 
@@ -110,21 +110,21 @@ error: cannot delete branch '<branch>' used by worktree
 
 * **`git stash drop <stash>`**：用于删除Git暂存堆中指定的临时保存的修改记录，`<stash>`默认为`stash@{0}`。
 
-* **`git stash branch <branch> <stash>`**：该命令用于**基于暂存记录**，**创建新分支**，并自动应用该`stash`的修改，`<stash>`默认为`stash@{0}`；
+* **`git stash branch <branch> <stash>`**：该命令用于**基于暂存记录**，在当前`HEAD`处**创建新分支**，并自动应用该`stash`的修改，`<stash>`默认为`stash@{0}`；
 
-#### 🎯 `git switch` & `git checkout`
+#### 🎯 `git  switch` & `checkout`
 
 Git的分支切换是日常开发中常用操作之一，**我们可以使用`git checkout`或者`git switch`完成分支切换操作**。
 
 `git switch`该命令是**Git 2.23**引入的新命令，用于替代`git checkout`中**切换分支**的功能。相比于`git checkout`，`git switch`语义更清晰、功能也聚焦于**分支切换**，其常用选项如下：
 
-| 选项                                                 | 说明                                 |
-| ---------------------------------------------------- | ------------------------------------ |
-| `-c`/`--create`                                      | 创建并切换到新分支                   |
-| `-C`                                                 | 强制创建分支，若分支已存在则重建分支 |
-| `-f`/`--force`/`--discard-changes`                   | 强制切换，**放弃当前改动**           |
-| `--detach`                                           | 进入**detached HEAD**状态            |
-| <span style='color: steelblue'>**`--orphan`**</span> | 创建一个不含任何提交的新分支         |
+| 选项                                            | 说明                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| **`-c`/`--create`**                             | 创建并切换到新分支                                           |
+| **`-C`**                                        | 强制创建分支，若分支已存在则重建分支                         |
+| `-f`/`--force`/`--discard-changes`              | 强制切换，**放弃当前改动**                                   |
+| `--detach`                                      | 进入**detached HEAD**状态                                    |
+| <span style='color: cyan'>**`--orphan`**</span> | 创建一个不含任何提交的新分支。**使用该选项时，不需要再使用`-c`** |
 
 `git switch --orphan`用于创建一个 **孤立分支** | `orphan branch` 。这种分支的特点是：**没有父提交，历史完全独立**，<u>适合需要完全隔离历史记录的场景</u>，例如：使用`Github Pages`部署静态网页时，我们不想要`gh-pages`有其他构建文件，我们可以使用该选项创建`gh-pages`。
 
@@ -146,15 +146,69 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 
 **`git checkout`是一个相当全能的Git命令**，它可以用来切换分支、恢复文件、检出特定提交等。这个命令在Git的多个操作中扮演关键角色，我们就在本章详细学习一下`git checkout`的用法。其常用选项如下：
 
-| 选项                                   | 说明                                                         |
-| -------------------------------------- | ------------------------------------------------------------ |
-| `-b <branch>`                          | 创建并切换分支<br/><span style='color: gray'>*等价命令：`git switch -c <branch>`*</span> |
-| `-B <branch>`                          | **强制创建分支**，放弃当前改动<br/>**重置分支**，如果分支已存在，则会重置到当前`HEAD` |
-| `target`=`<branch>`/`<commit>`/`<tag>` | 切换到指定的<u>本地分支/具体提交/标签</u>上，这里我们用`<target>`统一代指 |
-| `--detach <target>`                    | 进入**detached HEAD**状态，`<target>`默认为`HEAD`<br/><span style='color: gray'>*等价命令：`git switch -d <target>`*</span> |
-| `--ours <file>`/`--theirs <file>`      | 合并冲突时选择版本，**也可以用`--`指定处理文件**<br/><span style='color: gray'>*等价命令：`git restore --ours`/`--theirs`*</span> |
-| `-f`/`--force`                         | 强制切换分支，忽略未保存更改<br/><span style='color: gray'>*等价命令：`git switch -f <target>`*</span> |
-| `<target> -- <file>`                   | 恢复特定`<target>`提交的文件<br/><span style='color: gray'>*等价命令：`git restore --source <target> -- <file>`*</span> |
+| 选项                                                      | 说明                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| `-b <branch>`                                             | 创建并切换分支<br/><span style='color: gray'>*等价命令：`git switch -c <branch>`*</span> |
+| `-B <branch>`                                             | **强制创建分支**，放弃当前改动<br/>**重置分支**，如果分支已存在，则会重置到当前`HEAD` |
+| `<target>`=<br/>`<branch>`/`<commit>`/`<tag>`             | 切换到指定的<u>本地分支/具体提交/标签</u>上，这里我们用`<target>`统一代指 |
+| `--detach <target>`                                       | 进入**detached HEAD**状态，`<target>`默认为`HEAD`<br/><span style='color: gray'>*等价命令：`git switch -d <target>`*</span> |
+| `--ours <file>`/`--theirs <file>`                         | 合并冲突时选择版本，**也可以用`--`指定处理文件**<br/><span style='color: gray'>*等价命令：`git restore --ours`/`--theirs`*</span> |
+| `-f`/`--force`                                            | 强制切换分支，忽略未保存更改<br/><span style='color: gray'>*等价命令：`git switch -f <target>`*</span> |
+| <span style='color: cyan'>**`<target> -- <file>`**</span> | 恢复特定`<target>`提交的文件<br/><span style='color: gray'>*等价命令：`git restore --source <target> -- <file>`*</span> |
+
+#### 🏷️ `git tag`
+
+`git tag`用于给某个**特定提交**打标签的一条命令。标签一般用于标记重要的版本点，比如发布版本，方便后续查找、**检出** | `checkout` 和管理。我们可以使用该命令**创建**和**管理**标签，以下是常用的<u>创建标签选项</u>：
+
+| 选项                                                         | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **`-a <tag> [<commit>]`/`--annotate`**                       | 创建一个 **附注标签** \| `annotated tag` 。我们常使用`git tag -a <tag> [<commit>]`创建标签。我们在创建标签时，可以指定`commit`作为打标目标，如果不指定则会默认当前`HEAD` |
+| `-s <tag>`/`--sign`                                          | 创建**GPG签名标签**，需要预先配置`user.signingkey`           |
+| <span style='white-space: nowrap'>`-u <pub_fp>`/`--local-user=<pub_fp>`</span> | 使用指定的GPG密钥ID（`pub_key`）创建**GPG签名标签**          |
+| `-m <message>`                                               | 为标签添加说明信息，需配合`-a`/`-s`使用                      |
+
+了解完Git标签如何创建后，我们再来学习一下如何管理标签。我们可以使用以下命令**列出标签**：
+
+* **`-l [<pattern>]`/`--list`**：用于**列出标签**，直接运行`git tag`就等于执行了`git tag -l`，常用的通配符如下：
+
+    | 通配符 | 说明         |
+    | ------ | ------------ |
+    | `*`    | 任意字符     |
+    | `?`    | 单个任意字符 |
+    | `[]`   | 字符集合     |
+
+    例如，我们可以使用`git tag -l "v1.*"`来匹配所有以 `v1.` 开头的标签；
+
+* **`--sort=<key>`**：用于**排序标签列表**，Git默认是按字典序排序（不是按时间），可以通过`--sort`指定排序规则，常见的排序字段有：
+
+    | 排序字段        | 说明                                         |
+    | --------------- | -------------------------------------------- |
+    | `refname` ✅     | 标签名称，字典序排序                         |
+    | *`creatordate`* | 标签创建日期                                 |
+    | *`taggerdate`*  | 打标签者的时间                               |
+    | `version`       | 按照**语义化版本**排序（比如`v1.9`<`v1.10`） |
+    | **`-<key>`**    | 反向排序                                     |
+
+* **`--contains <commit>`**：列出包含某提交的标签；
+
+* **`--merged <commit>`**：列出已合并到某提交的标签；
+
+* <span style='color: cyan'>**`--format=<format>`**</span>：自定义输出格式。我们可以自定义每个标签的输出格式，类似`git log --pretty=format`的用法，常用占位符如下：
+
+    | 占位符                 | 说明                             |
+    | ---------------------- | -------------------------------- |
+    | `%(*objectname)`       | 对应提交的`SHA1`                 |
+    | `%(refname)`           | 标签**全名**（`refs/tags/v1.0`） |
+    | `%(refname:short)`     | 标签**短名**（`v1.0`）           |
+    | `%(taggername)`        | 打**标签人**                     |
+    | `%(creatordate:short)` | 创建时间（简短）                 |
+    | `%(subject)`           | 标签说明第一行                   |
+
+关于Git标签，还有以下可能会用到的命令：
+
+* **删除标签**：使用`git push <remote> --delete <tag>`删除远程仓库中的标签，也可以使用`git tag -d <tag>`删除本地标签；
+* **查看详情**：使用`git show <tag>`显示标签内容和对应的提交详情；
+* **验证签名**：使用`-v <tag>`选项，验证指定标签的GPG签名；
 
 #### 🌐 `git worktree`
 
@@ -178,7 +232,7 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
     | `--detach`                                                   | 以**detached HEAD**模式`checkout`一个提交                    |
     | `--force`                                                    | 强制覆盖已存在的**工作目录**`<path>`，需要谨慎使用           |
     | <span style='white-space: nowrap'>`--checkout`/`--no-checkout`</span> | 控制添加**工作目录**后，是否显式执行`checkout`，**默认是`--checkout`** |
-    | **`--lock`**                                                 | 锁定<span style='color: steelblue'>工作树</span>，防止其被删除或移动 |
+    | **`--lock`**                                                 | 锁定<span style='color: cyan'>工作树</span>，防止其被删除或移动 |
     | `--orphan <branch>`                                          | 创建一个**孤立分支**并`checkout`（相当于`git checkout --orphan`） |
 
     两个工作目录间如何合并，可以执行`worktree`的**Merge Mock**实验：
@@ -228,7 +282,7 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
     | ---------------------------------- | ------------------------------------------------------------ |
     | `-n`/`--[no-]dry-run`              | 控制是否执行`prune`命令                                      |
     | `-v`/`--[no-]verbose`              | 控制是否显示每个被清除的工作树信息                           |
-    | **` --[no-]expire <expiry-date>`** | **用于清理“临时锁定”的工作树**，<span style='color: steelblue'>只对锁定工作目录生效</span><br/>时间格式可为：`1.hour.ago`、`2.days.ago`、`now`、RFC时间等 |
+    | **` --[no-]expire <expiry-date>`** | **用于清理“临时锁定”的工作树**，<span style='color: cyan'>只对锁定工作目录生效</span><br/>时间格式可为：`1.hour.ago`、`2.days.ago`、`now`、RFC时间等 |
 
 * <span style='color: gray'>**`git worktree repair <path>`**</span>：该命令用于**修复`.git/worktrees/`元数据目录**，主要用于在某些意外情况下（如物理目录移动、系统崩溃、备份还原等）**重新同步Git对工作树的识别和绑定**；
 
@@ -317,19 +371,19 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 
 需要注意的是，使用`git rebase`进行分支融合，**待变基分支的指向会随着命令执行而改变**。`git rebase`的常用选项如下：
 
-| 选项                                                         | 说明                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| <span style='color: crimson'>**`-i`/`--interactive`**</span> | 进入**交互式变基**模式，可对每个提交进行操作（如**修改、合并、重排**等） |
-| `--continue`                                                 | 解决变基冲突后继续执行变基操作                               |
-| `--skip`                                                     | 跳过当前出错的提交，不再应用它                               |
-| `--abort`                                                    | 取消变基，恢复到开始前的状态                                 |
-| **`--keep-empty`**                                           | 默认变基会丢弃空提交，使用该选项**保留空提交**               |
-| `--autostash`                                                | 在变基前自动暂存工作区的变更，并在变基后恢复                 |
-| <span style='color: gray'>`--exec <cmd>`</span>              | 在每个 rebase 的提交之后执行一个命令（可用于测试）           |
+| 选项                                                      | 说明                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| <span style='color: pink'>**`-i`/`--interactive`**</span> | 进入**交互式变基**模式，可对每个提交进行操作（如**修改、合并、重排**等） |
+| `--continue`                                              | 解决变基冲突后继续执行变基操作                               |
+| `--skip`                                                  | 跳过当前出错的提交，不再应用它                               |
+| `--abort`                                                 | 取消变基，恢复到开始前的状态                                 |
+| **`--keep-empty`**                                        | 默认变基会丢弃空提交，使用该选项**保留空提交**               |
+| `--autostash`                                             | 在变基前自动暂存工作区的变更，并在变基后恢复                 |
+| <span style='color: gray'>`--exec <cmd>`</span>           | 在每个`rebase`的提交之后执行一个命令（可用于测试）           |
 
 #### 🍒  `git cherry-pick`
 
-`git cherry-pick`用于将提交从一个分支<span style='color: steelblue'>**复制到当前分支**</span>，<u>这不会改变原分支的指向</u>。其使用方法如下：
+`git cherry-pick`用于将提交从一个分支<span style='color: cyan'>**复制到当前分支**</span>，<u>这不会改变原分支的指向</u>。其使用方法如下：
 
 * `git cherry-pick <commit-hash>`：复制单个提交；
 * **`git cherry-pick <start-commit>..<end-commit>`**：复制一组提交，**注意提交先后顺序**；
@@ -343,13 +397,13 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 
 其常用选项如下：
 
-| 选项          | 说明             |
-| ------------- | ---------------- |
-| `<commit>`    | 应用指定提交     |
-| `-e <commit>` | 修改提交信息     |
-| `-x <commit>` | 添加原提交信息   |
-| `--abort`     | 放弃 cherry-pick |
-| `--continue`  | 解决冲突后继续   |
+| 选项          | 说明              |
+| ------------- | ----------------- |
+| `<commit>`    | 应用指定提交      |
+| `-e <commit>` | 修改提交信息      |
+| `-x <commit>` | 添加原提交信息    |
+| `--abort`     | 放弃`cherry-pick` |
+| `--continue`  | 解决冲突后继续    |
 
 ## 调试命令
 
@@ -376,11 +430,11 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 | *`-A <n>`*                                                   | 匹配行 **后** 额外显示 `n` 行上下文                          |
 | *`-B <n>`*                                                   | 匹配行 **前** 额外显示 `n` 行上下文                          |
 | *`-C <n>`*                                                   | 匹配行前后各显示 `n` 行上下文（等价于 `-A n -B n`）          |
-| `--untracked`                                                | <span style='color: steelblue'>**Git默认只搜索已跟踪的文件**</span>，使用此选项可以搜索未被跟踪的文件 |
+| `--untracked`                                                | <span style='color: cyan'>**Git默认只搜索已跟踪的文件**</span>，使用此选项可以搜索未被跟踪的文件 |
 | `--cached`                                                   | 只在**暂存区**中搜索                                         |
 | `--no-index`                                                 | 使用此命令可以搜索非Git管理的仓库（即根目录下没有`.git`的仓库）中的文件 |
 
-#### <span style='color: steelblue'>🔍 `git bisect`</span>
+#### <span style='color: cyan'>🔍 `git bisect`</span>
 
 `git bisect`用于**快速定位引入bug的提交**。它采用**二分查找算法**，通过标记「好」和「坏」的提交，自动帮你在提交历史中缩小范围，直到找出引入问题的那一个提交。
 
@@ -445,7 +499,7 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 | `--numstat`                             | 显示数字**统计**（增/减行数）                                |
 | `--name-only`                           | 显示修改的**文件名**                                         |
 | `--name-status`                         | 显示**文件名**、<u>变更状态</u>（`M` - 修改，`A` - 添加，`D` - 删除） |
-| **`--color-words`**                     | 高亮显示<span style='color: crimson'>单词级</span>差异，适合`Markdown`、`Latex`等文本内容 |
+| **`--color-words`**                     | 高亮显示<span style='color: pink'>单词级</span>差异，适合`Markdown`、`Latex`等文本内容 |
 | **`-w`**                                | 忽略<u>所有</u>空格变化                                      |
 | **`-b`**                                | 忽略<u>行末</u>空格                                          |
 | <span style='color: gray'>*`-z`*</span> | 用`NUL`字符分隔输出（适合脚本解析）                          |
@@ -456,7 +510,7 @@ Git的分支切换是日常开发中常用操作之一，**我们可以使用`gi
 
 * **`git diff <commit>^!`**：对比某个提交与其父提交的差异。`^!`是Git的语法糖，`<commit>^!`等价于`<commit>^ <commit>`；
 * **`git diff <target>..<target>`**：比较两个提交间的差异，我们也可以使用`<target> <target>`来代替原输出，两种效果相同；
-* <span style='color: steelblue'>**`git diff <branch_1>...<branch_2>`**</span>：比较<u>`<branch_2>`</u>与<u>`<branch_1>`的最近**共同祖先**</u>的差异；
+* <span style='color: cyan'>**`git diff <branch_1>...<branch_2>`**</span>：比较<u>`<branch_2>`</u>与<u>`<branch_1>`的最近**共同祖先**</u>的差异；
 
 我们也可以使用`git difftool`调用第三方工具来查看`diff`，我们只需要将上述`git diff`改为`git difftool`即可。**注意，使用`git difftool`时，不需要添加`options`**。
 
