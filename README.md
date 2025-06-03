@@ -6,7 +6,6 @@
 
 * **🖊️ 编写博客**：编写科研、技术博客；
 * **🎄 Git管理**：使用多分支管理项目；
-
 * **🛠️ 博客搭建**：使用`hexo`搭建静态博客；
 * **📜 配置Github Actions**：添加 ***部署*** 、***发布*** 、***分支*** 任务；
 * **🌵 客制化`hexo-theme-cactus`**：修改主题配色、修改排版样式、添加字体（[LxgwWenKai](https://github.com/lxgw/LxgwWenKai-Screen)）等；
