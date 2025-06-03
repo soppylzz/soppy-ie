@@ -1,0 +1,102 @@
+name: 🗑️ Delete
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        type: boolean
+        description: Is Dry-run
+        default: true
+
+jobs:
+  delete_merged_branches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: set up bot git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: fetch all branches
+        run: git fetch --prune --all
+
+      - name: delete merged branches
+        run: |
+          protected_branches=(main master)
+          allowed_prefixes=("old/" "new/" "site/")
+          REPORT_FILE="deleted-branches-report.md"
+          
+          echo "# 🧹 Deleted Merged Branches Report" > $REPORT_FILE
+          echo "_Auto-generated on $(date +'%Y-%m-%d %T %Z')_" >> $REPORT_FILE
+          echo >> $REPORT_FILE
+          
+          deleted_count=0
+          dry_run_mode="${{ github.event.inputs.dry-run == 'true' && 'true' || 'false' }}"
+          
+          for base in "${protected_branches[@]}"; do
+            echo "🔍 Checking branches merged into '$base'..."
+            merged_branches=$(git branch -r --merged origin/$base | grep -vE "->|HEAD" | sed 's|^[[:space:]]*origin/||')
+
+            while IFS= read -r branch; do
+              skip=false
+
+              for protected in "${protected_branches[@]}"; do
+                if [[ "$branch" == "$protected" ]]; then
+                  echo "🛡️ Skipping protected branch: $branch"
+                  skip=true
+                  break
+                fi
+              done
+              $skip && continue
+
+              match_prefix=false
+              for prefix in "${allowed_prefixes[@]}"; do
+                if [[ "$branch" == "$prefix"* ]]; then
+                  match_prefix=true
+                  break
+                fi
+              done
+
+              if ! $match_prefix; then
+                echo "⏭️ Skipping non-matching branch: $branch"
+                continue
+              fi
+
+              echo "🗑️ Deleting branch: $branch"
+              if [[ "$dry_run_mode" == "true" ]]; then
+                echo "💡 Dry-run: skipping actual deletion for $branch"
+                echo "- \`$branch\` (dry-run, would be deleted from \`$base\`)" >> "$REPORT_FILE"
+              else
+                git push origin --delete "$branch"
+                if [ $? -eq 0 ]; then
+                  echo "✅ Deleted: $branch"
+                  echo "- \`$branch\` (merged into \`$base\`)" >> "$REPORT_FILE"
+                  ((deleted_count++))
+                else
+                  echo "❌ Failed to delete: $branch"
+                fi
+              fi
+            done <<< "$merged_branches"
+          done
+
+          echo >> "$REPORT_FILE"
+          echo "**Total branches deleted:** $deleted_count" >> "$REPORT_FILE"
+
+          if [ $deleted_count -eq 0 ]; then
+            echo "ℹ️ No branches were deleted." >> "$REPORT_FILE"
+          fi
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload deletion report
+        uses: actions/upload-artifact@v4
+        with:
+          name: deleted-branches-report
+          path: deleted-branches-report.md
