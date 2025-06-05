@@ -138,7 +138,7 @@ theme_config:
     repo: soppylzz/soppy-ie
     issue_term: pathname
     label: utteranc
-    theme: preferred-color-scheme
+    theme: github-dark
 
   mathjax:
     enabled: true
