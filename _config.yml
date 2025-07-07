@@ -105,6 +105,15 @@ theme: cactus
 #  repository: git@github.com:SoppyLzz/soppy-ie.git
 #  branch: main
 
+katex:
+  enable: true
+  css: true
+  js: true
+  delimiters:
+    - {left: "$$", right: "$$", display: true}
+    - {left: "$", right: "$", display: false}
+  copy_tex: false
+
 theme_config:
   projects_url: http://github.com/soppylzz
   social_links:
@@ -141,7 +150,7 @@ theme_config:
     theme: github-dark
 
   mathjax:
-    enabled: true
+    enabled: false
 
   tags_overview: false
 
