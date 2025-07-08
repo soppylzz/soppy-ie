@@ -1,0 +1,55 @@
+open_graph:
+  enable: true
+  twitter_id:
+article:
+  type: tech
+  auto_excerpt: 150
+  share:
+    - wechat
+    - email
+    - link
+  license: "采用 [署名-非商业性使用-相同方式共享 4.0 国际](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议，转载请注明出处。"
+logo:
+  subtitle: '欢迎来到我的博客！| 溜了溜了 =͟͟͞͞( •̀д•́)'
+menubar:
+  columns: 2
+  items:
+    - id: post
+      theme: '#1BCDFC'
+      icon: solar:documents-bold-duotone
+      title: 博客
+      url: /
+    - id: about
+      theme: '#3DC550'
+      title: 关于
+      icon: solar:planet-bold-duotone
+      url: /about/
+copycode:
+  enable: true
+loading:
+  loading: 全力加载中
+  error: 加载失败，请稍后重试。
+comments:
+  service: beaudar
+  utterances:
+    repo: soppylzz/soppy-ie
+style:
+  border-radius:
+    card: 8px # 卡片圆角
+    card-l: 10px
+    card-s: 10px
+    block: 8px # 块圆角
+    bar: 4px # 导航栏圆角
+    image: 4px # 图片圆角
+    image-l: 6px
+    image-s: 6px
+  font-size:
+    root: 16px
+    body: .9375rem # 15px
+    code: 85% # 14px
+    codeblock: 0.8125rem # 13px
+  font-family:
+    logo: '"LXGW WenKai", monospace'
+    body: '"LXGW WenKai", monospace'
+    code: 'Menlo, Monaco, Consolas, system-ui, "Courier New", monospace, sans-serif'
+    codeblock: '"Menlo, Monaco, Consolas, system-ui, "Courier New", monospace, sans-serif'

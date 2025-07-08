@@ -27,7 +27,9 @@
     "hexo-renderer-marked": "^7.0.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
-    "hexo-theme-landscape": "^1.0.0"
+    "hexo-theme-landscape": "^1.0.0",
+    "probe-image-size": "^7.2.3",
+    "cheerio": "^1.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
