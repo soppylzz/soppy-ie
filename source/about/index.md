@@ -1,5 +1,7 @@
 ---
-title: about
+menu_id: about
+title: 个人介绍
+comments: false
 ---
 
 ## 个人介绍✨
