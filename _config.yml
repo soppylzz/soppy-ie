@@ -270,3 +270,10 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: stellar
+
+katex:
+  enable: true
+  strict: false   # <== 关键项，关闭警告
+  copy_tex: true
+  delimiters: 'dollars'  # 识别 $...$ 和 $$...$$
+  throwOnError: false    # 防止错误中断构建流程

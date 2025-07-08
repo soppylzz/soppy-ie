@@ -53,3 +53,9 @@ style:
     body: '"LXGW WenKai", monospace'
     code: 'Menlo, Monaco, Consolas, system-ui, "Courier New", monospace, sans-serif'
     codeblock: '"Menlo, Monaco, Consolas, system-ui, "Courier New", monospace, sans-serif'
+
+plugins:
+  katex:
+    enable: false
+  mathjax:
+    enable: false
