@@ -13,4 +13,4 @@
 
 ## 评论插件
 
-使用 [Beaudar - 表达](https://beaudar.lipk.org/) 这一评论插件。使用`hexo-theme-stellar`提供的评论插件配置：[Stellar: 评论插件配置。
+使用 [Beaudar - 表达](https://beaudar.lipk.org/) 这一评论插件。使用`hexo-theme-stellar`提供的评论插件配置：[Stellar: 评论插件配置](https://xaoxuu.com/wiki/stellar/comments/)。
