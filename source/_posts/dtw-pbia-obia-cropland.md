@@ -82,11 +82,11 @@ categories:
 
 ### 4. 物候分析、对象分割与TWDTW
 
-#### 4.1. 物候分析
+#### 🧐 物候分析
 
 本论文只采用了`NDVI`来获取作物的物候模式，因此对物候的分析较少；论文主要对三个测试区域中各作物类别的`NDVI`物候曲线进行分析；
 
-#### 4.2. 对象分割
+#### ✂️ 对象分割
 
 论文中这两个方法均是使用的他人提供的工具与代码。论文中使用两小节介绍引用；
 
@@ -95,7 +95,7 @@ categories:
 * 时序对象分割使用是每张Sentinel-2影像的R、G、B、NIR波段；
 * 使用ESP2工具自动化生成MRS算法的参数\[[相关论文](https://www.sciencedirect.com/science/article/pii/S0924271613002803)\]\[[ESP2工具的使用](https://blog.csdn.net/weixin_43238426/article/details/108595989)\]；
 
-#### 4.3. TWDTW
+#### 📈 TWDTW
 
 [Maus等人（2016年）](https://scholar.google.com/scholar_lookup?title=A%20time-weighted%20dynamic%20time%20warping%20method%20for%20land-use%20and%20land-cover%20mapping&publication_year=2016&author=V.%20Maus&author=G.%20Camara&author=R.%20Cartaxo&author=A.%20Sanchez&author=F.M.%20Ramos&author=G.R.D.%20Queiroz)为DTW引入了时间约束，这个约束考虑到了土地覆盖类型的季节性，相较于传统DTW，该改进算法提高了分类准确率；并且Maus等人使用R语言实现了该算法，并发布了开源R包`dtwSat`；
 

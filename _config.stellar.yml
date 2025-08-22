@@ -31,7 +31,7 @@ loading:
   error: 加载失败，请稍后重试。
 comments:
   service: beaudar
-  utterances:
+  beaudar:
     repo: soppylzz/soppy-ie
 style:
   border-radius:

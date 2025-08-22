@@ -6,6 +6,10 @@ tags:
   - tutorial
 categories:
   - 笔记
+cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-3.png
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-3.png
+poster:
+  headline: Python笔记：数据结构
 ---
 
 > 这里我只是简单介绍一下Python数据结构的一些常用内容，详细内容请参考：[Python 3.13.0 文档](https://docs.python.org/zh-cn/3/) 。

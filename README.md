@@ -1,11 +1,16 @@
 # Soppy-ie
 
-> **soppy-ie即soppyの家**，如果你想详细了解该站点的搭建流程，请前往我的博客：[实践笔记：Hexo博客搭建与任务流探索](https://soppylzz.github.io/soppy-ie/2025/03/30/cactus/)；
+> [!CAUTION]
+>
+> 当前博客已弃用Github Pages+Actions的部署方式，网站内容已转移到 [Soppy的小屋](https://note.soppy.site)。
 
-**主要工作：**
+## 内容
 
-* **🖊️ 编写博客**：编写科研、技术博客；
-* **🎄 Git管理**：使用多分支管理项目；
-* **🛠️ 博客搭建**：使用`hexo`搭建静态博客；
-* **📜 配置Github Actions**：添加 ***部署*** 、***发布*** 、***分支*** 任务；
-* **🌵 客制化`hexo-theme-cactus`**：修改主题配色、修改排版样式、添加字体（[LxgwWenKai](https://github.com/lxgw/LxgwWenKai-Screen)）等；
+本项目的主要工作有：
+
+* **🖊️ 编写博客**：编写<u>科研</u>、<u>技术</u>博客；
+* **🏚️ 已废弃**：~~配置Github Actions~~，~~客制化`hexo-theme-cactus`~~
+
+## 评论插件
+
+使用 [Beaudar - 表达](https://beaudar.lipk.org/) 这一评论插件。使用`hexo-theme-stellar`提供的评论插件配置：[Stellar: 评论插件配置。

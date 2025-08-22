@@ -6,7 +6,11 @@ tags:
   - tools
   - tutorial
 categories:
-  - 笔记 
+  - 笔记
+cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/%E7%94%9F%E6%88%90%20Git%20%E6%95%99%E7%A8%8B%E5%B0%81%E9%9D%A2-3.png
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/%E7%94%9F%E6%88%90%20Git%20%E6%95%99%E7%A8%8B%E5%B0%81%E9%9D%A2-3.png
+poster:
+  headline: Git笔记：背景与基础
 ---
 
 > 本文参考资料为**Git**官网的官方文档 [Git - Reference](https://git-scm.com/docs) ；
@@ -34,12 +38,12 @@ Git不仅在效率上做得出色，它还具备非常强的数据完整性保�
 
 在使用Git管理项目时，每个被管理的文件都会处于某种状态，表示它当前在Git生命周期中的位置。文件有以下四种工作状态：
 
-| 状态                                 | 所在区域                                                     | IDE可视化                                                    | 说明                                                         |
-| ------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| *`untracked`*                        | <span style='white-space: nowrap'>工作区`Working Directory`</span> | <span style='color: crimson'>**`file.txt`**</span>           | 文件数据未被Git跟踪，且未被`.gitignore`屏蔽跟踪，<span style='color: cyan'>**待`git add`跟踪暂存**</span> |
-| **`committed`**<br/>**`unmodified`** | 工作区<br/>版本库`Commit History`                            | **`file.txt`**                                               | 文件数据已经保存到Git**本地版本库**，且当前工作区也存在该文件数据 |
-| **`modified`**                       | 工作区                                                       | <span style='color: steelblue'>**`file.txt`**</span>         | 文件数据已被修改，<span style='color: cyan'>**待`git add`暂存**</span> |
-| **`staged`**                         | 暂存区<br/>`Staging Area/Index`                              | <span style='color: green;white-space: nowrap;'>**`file.txt`**[添加]</span><br/><span style='color: steelblue;white-space: nowrap;'>**`file.txt`**[更新]</span><br/><span style='color: pink;white-space: nowrap;'>**`file.txt`**[删除]</span> | 已对文件当前版本进行标记，已包含到下次提交快照中；           |
+| 状态                                                         | 所在区域                                                     | IDE可视化                                                    | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| *`untracked`*                                                | <span style='white-space: nowrap'>工作区`Working Directory`</span> | <span style='color: crimson'>**`file.txt`**</span>           | 文件数据未被Git跟踪，且未被`.gitignore`屏蔽跟踪，<span style='color: cyan'>**待`git add`跟踪暂存**</span> |
+| **`committed`**<br/><span style='white-space: nowrap'>**`unmodified`**</span> | 工作区<br/>版本库`Commit History`                            | **`file.txt`**                                               | 文件数据已经保存到Git**本地版本库**，且当前工作区也存在该文件数据 |
+| **`modified`**                                               | 工作区                                                       | <span style='color: steelblue'>**`file.txt`**</span>         | 文件数据已被修改，<span style='color: cyan'>**待`git add`暂存**</span> |
+| **`staged`**                                                 | 暂存区<br/>`Staging Area/Index`                              | <span style='color: green;white-space: nowrap;'>**`file.txt`**[添加]</span><br/><span style='color: steelblue;white-space: nowrap;'>**`file.txt`**[更新]</span><br/><span style='color: pink;white-space: nowrap;'>**`file.txt`**[删除]</span> | 已对文件当前版本进行标记，已包含到下次提交快照中；           |
 
 
 ![Git 下文件生命周期图。](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/lifecycle-1747301807005.png)
@@ -128,11 +132,11 @@ git vs
 
 如果不进行任何设置使用Git远端命令控制远端仓库，我们需要频繁输入账户信息。Git为我们提供了 **凭证管理工具** | `credential.helper` 以解决这个问题。Git官方推荐的`credential.helper`配置即相关软件更新频繁，Git中文文档可能来比较更新，前往Git英文文档查询是较优选择。在我写博客的时候，Git有如下适用于不同版本的凭证管理助手：
 
-| 平台        | 工具                                                         | 说明                                                         |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Windows** | `git-credential-wincred`                                     | 凭证存储在Windows凭据管理器中。随**Git for Windows**提供     |
-| **Linux**   | <span style='white-space: nowrap'>`git-credential-libsecret`</span><br/>`cache` | 凭证存储在Linux密钥服务中，如`GNOME`密钥圈或`KDE`钱包。一般由**Linux**发行版提供；<br/>Linux也支持短暂（15分钟）存储用户凭证在**cache**中； |
-| **MacOS**   | <span style='white-space: nowrap'>`git-credential-osxkeychain`</span> | 凭证存储在macOS密钥链中。随**macOS Git**提供                 |
+| 平台                                                 | 工具                                                         | 说明                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <span style='white-space: nowrap'>**Windows**</span> | `git-credential-wincred`                                     | 凭证存储在Windows凭据管理器中。随**Git for Windows**提供     |
+| **Linux**                                            | <span style='white-space: nowrap'>`git-credential-libsecret`</span><br/>`cache` | 凭证存储在Linux密钥服务中，如`GNOME`密钥圈或`KDE`钱包。一般由**Linux**发行版提供；<br/>Linux也支持短暂（15分钟）存储用户凭证在**cache**中； |
+| **MacOS**                                            | <span style='white-space: nowrap'>`git-credential-osxkeychain`</span> | 凭证存储在macOS密钥链中。随**macOS Git**提供                 |
 
 不同平台查看已保存的凭证的方式各不相同，以下是各个平台的查看方式：
 
@@ -262,10 +266,10 @@ git config --global alias.ei '!code $HOME/.soppyrc/git-custom-ini.sh'
 
 * **使用SHELL函数**：使用如下命令设置别名；
 
-  ``````bash
+  ```bash
   git config --global alias.pi '!f(){ sh "$HOME/.soppyrc/\
   						git-custom-ini.sh"; }; f'
-  ``````
+  ```
 
 | <span style='white-space: nowrap'>问题</span>     | 单双引号选择问题                                             |
 | ------------------------------------------------- | ------------------------------------------------------------ |
