@@ -2,9 +2,10 @@
 menu_id: about
 title: 个人介绍
 comments: false
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/banner.png
 ---
 
-## 个人介绍✨
+## ✨ 个人介绍
 
 [ 这个人真的很懒 :( ，个人简介都不想写] 
 
@@ -12,6 +13,6 @@ comments: false
 
 * 快乐技术宅💻、Giser🌍、全栈魔法师🧙；
 
-## 关于`tag`🏷️
+## 🏷️ 关于`tag`
 
 我会在这个博客网站记录我的**科研经历**与**开发实践**，为了在浏览关键词时知道这个关键词的所示板块，我指定了如下规则：科研相关的英文关键词<u>首字母大写</u>，而开发相关的英文关键词<u>首字母小写</u>；

@@ -7,6 +7,10 @@ tags:
   - tutorial
 categories:
   - 笔记
+cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-2.png
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-2.png
+poster:
+  headline: Python笔记：Conda常用命令
 ---
 
 > conda 是个复杂的 Python 版本管理隔离工具，这里我只是简单介绍一些 Conda 的常用命令，详细请参考：[命令 — conda 24.7.1 文档](https://docs.conda.org.cn/projects/conda/en/stable/commands/index.html) 。

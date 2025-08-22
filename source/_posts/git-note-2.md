@@ -7,6 +7,10 @@ tags:
   - tutorial
 categories:
   - 笔记 
+cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/%E7%94%9F%E6%88%90%20Git%20%E6%95%99%E7%A8%8B%E5%B0%81%E9%9D%A2.png
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/%E7%94%9F%E6%88%90%20Git%20%E6%95%99%E7%A8%8B%E5%B0%81%E9%9D%A2.png
+poster:
+  headline: Git笔记：分支与调试
 ---
 
 > 本文参考资料为**Git**官网的官方文档 [Git - Reference](https://git-scm.com/docs) ；

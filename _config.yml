@@ -177,8 +177,8 @@
 
 # Site
 title: Soppy的小屋
-avatar: https://cn.gravatar.com/avatar/0f29995ecdbf6b2bc0ce96df8344d70f?size=256
-favicon: https://cn.gravatar.com/avatar/0f29995ecdbf6b2bc0ce96df8344d70f?size=256
+avatar: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/avatar.jpg
+favicon: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/avatar.jpg
 language: zh-CN
 author: soppylzz
 keywords:
@@ -186,7 +186,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://soppylzz.github.io/soppy-ie
+url: https://note.soppy.site/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:

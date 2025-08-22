@@ -6,6 +6,10 @@ tags:
   - tutorial
 categories:
   - 笔记 
+cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-1.png
+banner: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/python-1.png
+poster:
+  headline: Python笔记：控制与运算
 ---
 
 > 这里我只是简单介绍一下Python控制与运算的一些常用内容，详细内容请参考：[Python 3.13.0 文档](https://docs.python.org/zh-cn/3/) 。
