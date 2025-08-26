@@ -441,13 +441,95 @@ class LTAE2d(nn.Module):
 
 在 *ViT* 中，我们通常使用 *Transformer-only* 的主干网络来提取单幅图像的空间特征。当面对由多时相影像组成的 ***SITS*** 数据时，Transformer能否胜任呢？答案是可以的。
 
-**TSViT**正是将Transformer应用到 *SITS* 的一种方法。论文面向时空遥感序列提出了一种**时空联合特征提取 主干网络** | `Backbone`。该网络能从时序影像中为某一 *patch* 提取时间维度与周围空间的特征信息，并将该特征用于 *pixel-wise* 和 *patch-wise* 等下游预测任务。下面我们来逐步学习下 *TSViT* 的模型结构。
+***TSViT*** 正是将Transformer应用到 *SITS* 的一种方法。论文面向时空遥感序列提出了一种**时空联合特征提取 主干网络** | `Backbone`。该网络能从时序影像中为某一 *patch* 提取时间维度与周围空间的特征信息，并将该特征用于 *pixel-wise* 和 *patch-wise* 等下游预测任务。下面我们来逐步学习下 *TSViT* 的模型结构。
 
 ### 2. 模型结构
 
-这篇论文的 **$\text{3. Method}$** 部分对 *TSViT* 的 *整体架构* 和 ***关键改进*** 做了系统而清晰的阐述，非常值得一读。为了更好地理解其核心思想，接下来我们将沿着作者的思路，一步步拆解模型的各个组成模块，看看 *TSViT* 是如何在时空两个维度上同时建模，并最终实现对 *SITS* 数据的高效表征。
+论文的 **$\text{3. Method}$** 章节系统而清晰地介绍了 *TSViT* 的整体架构与若干关键设计细节，**推荐阅读原文**。为了更好地理解其核心思想，接下来我们将沿着作者的思路，一步步拆解模型的各个组成模块，看看 *TSViT* 是如何在时空两个维度上同时建模，并最终实现对 *SITS* 数据的高效表征。
 
-####  
+####  🔍 多查询设计
+
+在原始 *ViT* 中，通常在 *patch token* 序列前加入一个可学习的 ***cls token***（即`[CLS]`），并将该 *token* 的最终状态作为整张图像的<u>全局表示</u>用于分类（即单一查询向量用于聚合全局信息）。这是 ViT 的标准做法并被大量后续工作采用。
+
+*TSViT* 对这一点作了工程化与任务导向的扩展：引入 $K$ 个可学习的 *cls token*（此处 $K$ 与类别数相等），将这些 *cls token* 与 *patch token* 一起输入编码器，最后把每个 *cls token* 投影为一个标量并拼接得到长度为 $K$ 的 *logits* 向量。以下是论文原文的相关解释：
+
+> This design choice brings the following two benefits: 
+> 1. it in creases the capacity of the cls token relative to the patch tokens, allowing them to store more patterns to be used by the MSA operation; introducing multiple cls tokens can be seen as equivalent to increasing the dimension of a single cls token to an integer multiple of the patch token dimension $d_{cls} = k \cdot d_{patch}$ and split the cls token into k separate subspaces prior to the MSA operation. In this way we can increase the capacity of the cls tokens while avoiding is sues such as the need for asymmetric MSA weight matrices for cls and patch tokens, which would effectively more than double our model’s parameter count.
+> 2. it allows for more controlled handling of the spatial interactions between classes. By choosing $k = K$ and enforcing a bijective map ping from cls tokens to class predictions, the state of each cls token becomes more focused to a specific class with net work depth. In TSViT we go a step further and explicitly separate cls tokens by class after processing with the temporal encoder to allow only same-cls-token interactions in the spatial encoder. 
+>
+> 这种设计方案带来了以下两个方面的优势：
+> 1. **提升 *cls token* 的表达容量**
+>    相较于 *patch token*，*cls token* 拥有更大的存储空间，可捕捉和存储更多可供多头自注意力机制利用的模式。当引入多个 *cls token* 时，可以将其视为把单个 *cls token* 的维度扩展为 *patch token* 维度的整数倍，即 $d_{cls} = k \cdot d_{patch}$ 并在进入**MSA**之前将 *cls token* 拆分为 $k$ 个独立的子空间。这种方式不仅能够增强 *cls token* 的容量，还能避免设计不对称的**MSA**权重矩阵（分别作用于 *cls* 和 *patch token*），从而<u>避免模型参数量增加</u>至原先的两倍以上。 
+> 2. **更可控的类别空间交互**
+>    通过设置 $k = K$，并在 *cls token* 与类别预测之间建立一一对应的<u>映射关系</u>，随着网络深度的增加，每个 *cls token* 的状态将逐渐<u>专注于某一特定类别</u>。在**TSViT**中，设计进一步扩展：在时间编码器处理完成后，<u>显式地</u>按类别区分 *cls token*，使得在空间编码器中仅允许相同类别的 *cls token* 进行交互。  
+>
+> ---
+>
+> *TSViT* 在时间编码器处理后还**按类别**显式分离 *cls token*，从而在空间编码器中仅允许「同类 *cls token* 」之间交互，这被作者视作对作物类型识别有益的 **归纳偏置** | `inductive bias` 。
+
+需要特别说明的是，*TSViT* 并**未**改变模型最终输出的形状：*ViT* 往往将单个 *cls token* 的 $d_\text{model}$ 映射到类别维度 $K$（$d_\text{model}\to K$）；而 *TSViT* 则对 $K$ 个 *cls token* 各自进行 $d_\text{model}\to 1$ 的投影，再拼接得到 $K$ 维输出——二者在输出维度上等价，但内部的表征与交互方式不同（即内部并行化为类专属通道）。整个过程如下图所示：
+
+![image-20250826142948627](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/slidev-cqupt/image-20250826142948627-1756189796399.png)
+
+<center>figure 2.2. 主干网络设计</center>
+
+在作者的消融实验（Germany 数据集）中，将 **分解** | `factorization` 顺序改为 *temporo-spatial* 后，mIoU从 $48.8\%$ 跳升至 $78.5\%$ ；在此基础上加入额外的 *cls tokens*（即多查询设计）可把mIoU从 $78.5\%$ 提升到 $83.6\%$，因此作者在最终模型中采用了 $K$ 个 cls tokens。论文同时还说明了对 *cls token* 映射后再拼接的必要性：若允许不同 *cls token* 在空间编码器中**任意交互**，则会带来性能下降（$−2.1\%$ mIoU），且计算代价显著增加。
+
+最后说一下我的理解，论文中的消融实验显然证明了 <u>*cls token* 与 分类类别一一对应</u>这一设计的**有效性**，但该设计在此前的研究中显然也有应用，***TSViT*** 模型的重点还是在接下来介绍的几个章节中。
+
+#### 🫎 编码器架构
+
+在介绍**TSViT**的时空编码器模块之前，我们不妨先回顾一下 *ViT* 是如何使Transformer能够处理图像的。*ViT* 的核心思想是将输入图像划分为若干个固定大小的二维`patch`，并将每个`patch`内的像素展平为一维向量，作为Transformer的输入token。为了让Transformer感知这些 *patch token* 在空间上的相对位置信息，*ViT* 还需要在特定阶段引入 **位置编码**。这一处理步骤使得原本针对一维序列设计的Transformer可以自然扩展到二维图像建模任务中。
+
+基于这一思路，若我们从构建 *TSViT* 的角度出发，面对的是比单幅影像更复杂的 ***时序遥感影像*** 数据。与 *ViT* 输入的二维图像不同，SITS在空间 $(H, W)$ 之外还多了一个时间维度 $T$。为了同时建模时空信息，可以借鉴视频理解领域的研究思路——即在空间`patch`划分的基础上，将划分方式扩展到时间维度。具体来说，给定输入数据 $X \in \mathbb{R}^{T \times H \times W \times C}$，在时间与空间维度上应用一个大小为 $(t \times h \times w)$、步长为 $(t, h, w)$ 的三维卷积核，从而把原始数据划分为一系列时空`patch`。最终得到的序列长度为：
+$$
+\begin{align*}
+
+N = \left \lfloor \frac{T}{t} \right \rfloor\cdot\left \lfloor \frac{H}{h} \right \rfloor \cdot \left \lfloor \frac{W}{w} \right \rfloor 
+
+\end{align*}
+$$
+其中每个 *token* 同时包含了局部的时序与空间信息，其尺寸为 $\mathbb{R}^{thwC}$，然后我们再将 *patch token* 投影到 $d_\text{model}$ 维度，最终得到了适用于Transformer的输入序列。
+
+> 据论文中描述，经过实验验证这里的 $t$ 的最佳参数设置是 $t=1$ ，$h$、$w$ 的最佳取值则参考消融实验结果（同样也是越小越好 $2\times 2$）。
+>
+> 对于 $t=1$ **我的理解**是，通过这样设置，我们在使用线性映射<u>初步提取</u>`patch`内信息时将着重于空间尺度，对于时间尺度的信息提取则主要是在后续的Transformer编码器中实现。换句话说，$t=1$ 的设置避免了在`patch`划分阶段直接把时间信息与空间信息 *混合压缩* ，从而保留了更细粒度的时间分辨率。这种做法不仅使得模型能够更灵活地在后续模块中建模时序依赖关系，同时也避免了过早的时间维度下采样带来的信息损失。
+
+面对这样的输入序列，我们当然可以将其进行**位置编码**后直接送入Transformer编码器中处理，但这有两个问题：
+
+1. **计算复杂度过高**：自注意力机制的计算成本与序列长度呈 $\mathcal{O}(N^2)$ 的关系。当我们为了提高时空分辨率而采用较小的`patch`尺寸划分 SITS 数据时，序列长度 $N$ 会急剧增长，导致注意力计算的代价呈平方级膨胀，在实际应用中几乎不可接受。
+2. **时空建模不均衡**：如果在位置编码设计上未能妥善区分并平衡<u>时间</u>与<u>空间</u>两个维度的作用，Transformer可能会难以从长序列中有效捕捉时间依赖关系，从而无法充分建模SITS数据的时序特征。
+
+为了避免这些问题，*TSViT* 选择将输入序列按时间和空间维度分解，通过分别处理SITS数据的时间特征和空间特征，从而缩短Transformer实际处理的序列长度。*TSViT* 的时空编码器结构如下图所示：
+
+![image-20250827013628449](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/slidev-cqupt/image-20250827013628449-1756229788768.png)
+
+<center>figure 2.4. TSViT子模块（1）</center>
+
+这里简单说明一下我对 *TSViT* 编码器的理解，*TSViT* 对输入序列的**时序分解**实际上是将同一个`patch`划分在不同时间点上的 *patch token* 重组为一个新的时间序列，然后我们便可以利用 Transformer 捕捉其随时间演化的特征。从论文中的示意图也能看出，该阶段所用的**位置编码**并非固定模式，而是根据每幅影像的**实际观测时间**生成，以此更好地对齐 SITS 数据中的非均匀采样特性。
+
+我们假设一个SITS数据序列化后得到大小为  $(N_T\times N_H\times N_W\times d)$ 的 *patch token* 集合，其中 $N_T$ 表示时间步数，$N_H \times N_W$ 表示空间划分的 patch 数量，$d$ 是 token 维度。时序分解将序列重塑为 $\text{Z}_{\text{T}} \in \mathbb{R}^{N_HN_W\times N_T\times d}$ ，则时间编码器的输入为：
+$$
+\begin{align*}
+
+\mathbf{Z}_\text{T}^0 = \operatorname{concat}(\mathbf{Z}_\text{Tcls}, \mathbf{Z}_\text{T} + \mathbf{P}_T[t,:]) \in \mathbb{R}^{N_HN_W\times (K+N_T)\times d}
+
+\end{align*}
+$$
+其中，$\mathbf{Z}_{Tcls} \in \mathbb{R}^{K \times d}$ 表示 $K$ 个类别相关的查询向量；$\mathbf{P}_T[t,:] \in \mathbb{R}^{N_T \times d}$ 为基于观测时间生成的时间位置编码；拼接操作使得每个时序序列长度扩展为 $K + N_T$，即除了 $N_T$ 个 *patch token* 外，还额外包含 $K$ 个查询 *token*。
+
+需要注意的是，在Transformer内部，实际处理的是长度为 $(K + N_T)$、维度为 $d$ 的一维序列。而在具体实现中，通常会将 $(N_H N_W)$ 这一维度与 *batch size* 合并，以便批量计算并提升效率。
+
+
+
+#### 🦄 解码器架构
+
+
+
+### 3. 实验介绍
+
+* 消融实验
+* 对比实验
 
 
 
