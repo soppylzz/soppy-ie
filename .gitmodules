@@ -1,3 +1,6 @@
 [submodule "themes/stellar"]
 	path = themes/stellar
-	url = https://github.com/soppylzz/hexo-theme-stellar.git
+	url = git@github.com:soppylzz/hexo-theme-stellar.git
+[submodule "themes/cactus"]
+	path = themes/cactus
+	url = git@github.com:soppylzz/hexo-theme-cactus.git
