@@ -506,38 +506,50 @@ $$
 
 <center>figure 2.4. TSViT子模块（1）</center>
 
-这里简单说明一下我对 *TSViT* 编码器的理解，*TSViT* 对输入序列的**时序分解**实际上是将同一个`patch`划分在不同时间点上的 *patch token* 重组为一个新的时间序列，然后我们便可以利用 Transformer 捕捉其随时间演化的特征。从论文中的示意图也能看出，该阶段所用的**位置编码**并非固定模式，而是根据每幅影像的**实际观测时间**生成，以此更好地对齐 SITS 数据中的非均匀采样特性。
+这里简单说明一下我对 *TSViT* 编码器的理解，*TSViT* 对输入序列的**时序分解**实际上是将同一个`patch`划分在不同时间点上的 *patch token* 重组为一个新的时间序列，然后我们便可以利用 Transformer 捕捉其随时间演化的特征。从论文中的示意图也能看出，该阶段所用的**位置编码**并非固定模式，而是根据每幅影像的**实际观测时间**生成，位置编码的具体实现细节这里就不过多讲解。
 
 我们假设一个SITS数据序列化后得到大小为  $(N_T\times N_H\times N_W\times d)$ 的 *patch token* 集合，其中 $N_T$ 表示时间步数，$N_H \times N_W$ 表示空间划分的 patch 数量，$d$ 是 token 维度。时序分解将序列重塑为 $\text{Z}_{\text{T}} \in \mathbb{R}^{N_HN_W\times N_T\times d}$ ，则时间编码器的输入为：
 $$
 \begin{align*}
 
-\mathbf{Z}_\text{T}^0 = \operatorname{concat}(\mathbf{Z}_\text{Tcls}, \mathbf{Z}_\text{T} + \mathbf{P}_T[t,:]) \in \mathbb{R}^{N_HN_W\times (K+N_T)\times d}
+\mathbf{Z}_\text{T}^0 = \operatorname{concat}(\mathbf{Z}_\text{Tcls}, \mathbf{Z}_\text{T} + \mathbf{P}_\text{T}[t,:]) \in \mathbb{R}^{N_HN_W\times (K+N_T)\times d}
 
 \end{align*}
 $$
-其中，$\mathbf{Z}_{Tcls} \in \mathbb{R}^{K \times d}$ 表示 $K$ 个类别相关的查询向量；$\mathbf{P}_T[t,:] \in \mathbb{R}^{N_T \times d}$ 为基于观测时间生成的时间位置编码；拼接操作使得每个时序序列长度扩展为 $K + N_T$，即除了 $N_T$ 个 *patch token* 外，还额外包含 $K$ 个查询 *token*。
+其中，$\mathbf{Z}_\text{Tcls} \in \mathbb{R}^{K \times d}$ 表示 $K$ 个类别相关的查询向量；$\mathbf{P}_\text{T}[t,:] \in \mathbb{R}^{N_T \times d}$ 为基于观测时间生成的时间位置编码；拼接操作使得每个时序序列长度扩展为 $K + N_T$，即除了 $N_T$ 个 *patch token* 外，还额外包含 $K$ 个查询 *token*。需要注意的是，在Transformer内部，实际处理的是长度为 $(K + N_T)$、维度为 $d$ 的一维序列。而在具体实现中，通常会将 $(N_H N_W)$ 这一维度与 *batch size* 合并，以便批量计算并提升效率。最终我们选取时间编码器的前 $K$ 个 *cls token* 作为当前`patch`划分的时序特征输出，其中每一个 *cls token* 可以被视作该`patch`针对某一类别的提取的**二分类**判别特征。
 
-需要注意的是，在Transformer内部，实际处理的是长度为 $(K + N_T)$、维度为 $d$ 的一维序列。而在具体实现中，通常会将 $(N_H N_W)$ 这一维度与 *batch size* 合并，以便批量计算并提升效率。
+由图可知，*TSViT* 的空间编码器结构在整体上与 *ViT* 类似，可以理解为：利用一个**共享**的Transformer编码器，对 $K$ 个类别相关的二维特征图分别进行空间特征提取，从而为下游分类或分割任务提供判别性特征。在进入空间编码器之前，需要将时间编码器输出的张量按照空间维度重新排列，以确保序列与原始SITS数据的空间分布保持一致。空间编码器的输入为：
+$$
+\begin{align*}
 
+\mathbf{Z}_\text{S}^0 = \operatorname{concat}(\mathbf{Z}_\text{Scls}, \mathbf{Z}_\text{S} + \mathbf{P}_\text{S}) \in \mathbb{R}^{K\times (1+N_HN_W)\times d}
 
+\end{align*}
+$$
+需要注意的是，在 *ViT* 中通常只引入一个 *cls token*，用于在Transformer的训练过程中聚合整个序列的信息；而在 *TSViT* 的空间编码器中，虽然整体结构依然源自 *ViT*，但其**建模目标**可以被理解为对 $K$ 个类别相关的特征图<u>独立</u>进行空间特征提取。因此，聚合空间信息的 *cls token* 也应当扩展为 $K$ 个，对应于 $\mathbf{Z}_\text{Scls} \in \mathbb{R}^{K\times 1\times d}$（$K$ 个 *cls token* 与分类类别存在一一对应关系，不同类别的特征图序列应当与对应 *cls token* 构成长为 $1+N_HN_W$ 的新序列）。经过空间编码器的处理后，**输出序列**可自然分为两部分：
+
+* ***cls token***（$1 \times d$）：为当前特征图对于类别的全局表征；
+* ***patch token***（$N_HN_W\times d$）：各`patch`内的局部表征；
+
+通过将这两类 *token* 拆分并重组，*TSViT* 最终能够同时输出适用于 *patch-wise* 与 *pixel-wise* 的时空特征。这一设计不仅满足了分类任务对全局语义的需求，同时也为语义分割等 *密集预测* 任务提供了充分的空间上下文。
+
+通过上述讲解我们大致了解了 *TSViT* 编码器的结构，下面还补充一下针对 *TSViT* 编码器中各个序列的可视化说明：
+
+![image-20250827060859782](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/slidev-cqupt/image-20250827060859782-1756246140003.png)
+
+<center>时空编码器中的尺寸可视化</center>
 
 #### 🦄 解码器架构
 
+由于 *TSViT* 编码器能够同时提取适用于**全局任务**和**密集预测任务**的时空特征，作者在设计时为两类任务分别配置了相应的 ***解码器头部*** 。具体来说，*TSViT* 的解码器主要由`MLP`层以及若干矩阵运算组成，其整体结构如下所示：
 
+![image-20250827061848673](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/slidev-cqupt/image-20250827061848673-1756246728946.png)
 
-### 3. 实验介绍
+<center>figure 2.4. TSViT子模块（2）</center>
 
-* 消融实验
-* 对比实验
+从图中可以看到，空间编码模块会为每个`patch`提取出一个对应<u>某一类别</u>（$K$ 个类别）判别特征向量，该向量的维度为 $d$，其中蕴含了该`patch`内**所有像素**的分类判别信息。通过`MLP`层，这些判别信息能够进一步映射到像素级别，从而实现语义分割任务，这正是图中 $(c)$ **分割头**的作用。
 
-
-
-
-
-
-
-
+另一方面，在空间编码过程中引入的`[CLS]` *token* 用于聚合全局空间分布信息。该全局判别向量同样具有维度 $d$，可以通过映射转换为**整体** *parcel* 的类别预测，从而满足图像级别的分类任务需求。
 
 ## UTS-Former
 
@@ -550,7 +562,128 @@ $$
 | **日期**                                      | ⏲️ 2024                                                       |
 | **作者**                                      | 👩‍🔬 [Lingling Fan](https://scholar.google.com/citations?user=5ysGWLYAAAAJ&hl=zh-CN&oi=sra) |
 
+***UTS-Former*** 可以视作 *UTAE* 的改进版本。其核心思想在于，用 **全局自适应池化** | `GAP` 与改进后的 *TSViT* 替代 *UTAE* 中对时间维度 $T$ 的降维操作（*L-TAE* 注意力机制），从而使解码器部分更自然地迁移到 *UNet* 范式下。
 
+需要说明的是，原论文的研究任务是针对冬小麦的 *SITS* 数据进行二分类语义分割，这与我的研究内容有些区别，因此这里仅聚焦于论文的「**实验数据**」与「**模型构成**」这两个主要内容。
+
+### 2. 模型结构
+
+***UTS-Former*** 模型结构如下所示：
+
+![image-20250901155558017](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/image-20250901155558017.png)
+
+<center>figure 3.3. UTS-Former整体架构图</center>
+
+#### 🤖 编码器设计
+
+由于该论文并未公开模型源码，我们无法直接通过代码解析其结构。因此，这里主要基于论文原文的描述，结合<u>个人理解</u>，对模型结构的细节进行梳理与说明。接下来将从 ***编码器*** 部分入手，逐步介绍 *UTS-Former* 的整体设计。
+
+与常见的基于 *SITS* 数据的时序遥感影像分割任务类似，*UTS-Former* 在每一层编码器中的输入数据均组织为形状 $T \times H_l \times W_l \times C_l$ 的张量（此处暂不考虑批次维度）。在接收到该张量后，模型首先采用与 *UTAE* 相近的策略：对每个时间步的影像分别进行**二维卷积运算**，以完成该时刻影像的空间特征编码。为保证准确理解，我们不妨结合原文解读其结构。
+
+> We input the temporal sequence images into the encoder network with a stride of 2, kernel size of $3\times 3$, spatial resolution of $256\times 256$ and maximum length of the time series of 32. During the training process, we used masks to supplement the missing sequences if the temporal sequence number was less than 32. However, flexible input based on the actual sequence length was allowed during the testing process. The input channels include 9 spectral bands and 1 temporal channel, while the temporal channel is used only in the TST modules. The temporal channel refers to the actual acquisition dates of the images, and is designed to introduce temporal sequence information to the TST module. To obtain the temporal channel, we converted the acquisition date of each image to the day of the year (DOY) and extended it into a matrix with the same spatial resolution as the image to match the resolution of the input image. Considering the high computational complexity of 3D CNNs, the convolutional layers of the encoder are implemented using 2D CNNs, and the time dimension “T” is merged into the batch dimension. We obtained feature maps of scales 128, 64, 32, 16, and 8 after 5 CNN layers. Each CNN layer comprises a $3\times 3$ convolution operation, a batch normalization operation, and a rectified linear unit (ReLU) activation layer. To reduce spatial information loss, we employed convolutional layers with a stride of 2 instead of pooling operations for downsampling.
+>
+> 我们将时间序列图像输入编码器网络，步长为2，卷积核尺寸为 $3\times 3$ ，空间分辨率为 $256\times 256$ ，时间序列最大长度为32。训练过程中，若时间序列数量少于32，则使用掩码补充缺失序列。但在测试阶段允许根据实际序列长度进行灵活输入。<u>输入通道包含9个光谱波段和1个时间通道</u>，**其中时间通道仅用于TST模块**。该时间通道记录图像的实际采集日期，旨在为TST模块引入时间序列信息。为获取时间通道，我们将每幅图像的采集日期转换为年度天数（DOY），并扩展为与图像空间分辨率相同的矩阵以匹配输入图像。鉴于三维卷积神经网络（3D CNN）的高计算复杂度，**编码器的卷积层采用二维卷积神经网络实现**，<u>并将时间维度“T”合并至批量维度</u>。经过5层卷积网络处理后，我们获得了128、64、32、16和8个尺度的特征图。每层卷积网络包含 $3\times 3$ 卷积操作、批量归一化操作及ReLU激活层。为减少空间信息损失，<u>我们采用步长为2的**卷积层**替代**池化**操作进行降采样</u>。
+>
+> ---
+>
+> 🔹 **时间通道**
+>
+> 所谓时间通道，实际上是指各时间刻影像中每个像素对应的 *DOY*（Day of Year）信息。在 *UTS-Former* 中，该通道仅用于 *TST* 模块的位置编码。之所以被视为编码器的输入，是因为在送入 *TST* 之前，需要先将每幅图像的 *DOY* 值扩展到与各编码器处理尺度相匹配的空间分辨率。这可被视为 *TST* 的**预处理环节**，作者因此将其归类为编码器输入的一部分。
+>
+> 🔹 **二维卷积层**
+>
+> 通常，在 *SITS* 数据的空间特征提取中，会针对单一时间刻影像独立进行卷积编码。但通过对 *TSViT* 的分析不难发现，也可以将相邻时间刻的影像组合在一起进行空间编码，从而不仅获得空间特征，还能在一定程度上捕获短时间范围内的动态变化。
+>
+> 在具体实现上，*TSViT* 将该时空张量通过`Conv3D`（在实现效果上等价于`FC`层）映射为维度 $d_\text{model}$ 的一维向量，再送入Transformer处理。而类 *UTAE* 的模型同样可以采用这种方式。不过根据 *TSViT* 的实验结论，时间刻的最优分割尺度为 $t=1$，因此 *UTS-Former* 也遵循这一设置。在该条件下，`Conv3D` 的运算可以直接使用`Conv2D`实现。
+>
+> 🤔 **一些思考**
+>
+> 当我们使用 $t>1$ 的尺度分割 *SITS* 数据的时间维度时，空间编码模块输出的时序长度将会发生变化，从而对 *TST* 模块中的时间位置编码提出新的挑战。这一点可能正是潜在的改进方向。
+>
+> <span style='color: pink'>**一种可能的思路是**</span>：在输出某一时间刻特征图时，同时利用其**前后时间刻**的影像数据，以获得更加稳定的时序表征。至于特征提取方式，可以选择传统卷积，也可以直接采用论文提出的 *TST* 模块。
+>
+> 🔹 **下采样**
+>
+> 采用可训练的卷积层代替不可训练的池化层实现下采样。
+
+#### 🐎 TST模块
+
+*UTS-Former* 在类 *UTAE* 的结构中引入了 **时空Transformer** | `TST` ，以实现***降维跳跃连接***。该模块的设计结构如下图所示：
+
+![image-20250901170421917](https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/image-20250901170421917.png)
+
+<center>figure 3.4. TST模块结构（a）时间Transformer（b）空间Transformer</center>
+
+在介绍其具体结构之前，我们不妨先回忆一下 *TSViT* 的<u>主干</u>网络结构：*TSViT* 通过在**时间编码模块**中引入与分类类别一一对应的查询向量（`[CLS]` *token*），从而实现了对每个 *patch* 时序数据的类别特征提取。
+
+然而，如果在时间编码中不引入查询向量，会发生什么呢？这种情况下，时间编码模块将**仅**为时序序列中的每个元素添加全局上下文信息，而不会显式生成类别相关的表示。***TST*** 模块正是采用了这种设计：其时间编码模块的输入与输出数据维度保持一致：
+$$
+\begin{align*}
+
+\mathbf{X}^{\text{T}}_{\text{in}},\mathbf{X}^{\text{T}}_{\text{out}}\in \mathbb{R}^{N_hN_w \times T \times d}
+
+\end{align*}
+$$
+随后，*TST* 将时间编码模块的输出重新组织为：
+$$
+\begin{align*}
+
+\mathbf{X}^\text{S}_\text{in} \in \mathbb{R}^{T \times N_hN_w \times d}
+
+\end{align*}
+$$
+并将其送入**空间编码模块**。该模块由 Transformer 与 MLP 共同构成，能够在空间维度上进行特征交互与聚合。最终，模型完成了时序全局特征与空间特征的联合编码，实现了通道信息的有效融合，其输出维度变化如下：
+$$
+\begin{align*}
+
+(T \times H_l \times W_l \times C_l) \to (T \times H_l \times W_l)
+
+\end{align*}
+$$
+
+#### 🤯 跳跃连接与解码器设计
+
+由 *UTS-Former* 架构图可知，在U型结构的最底层“连接”中，模型并未引入 *TST* 模块降低编码器输出张量的维度。根据原论文描述，*UTS-Former* 采用 **全局自适应池化** | `global adaptive pooling` 实现信息降维。
+
+> In the decoder, the global adaptive pooling operation is first applied to the temporal dimension T, enabling channel fusion with the output of TST. The decoder employs 2D convolutions and generates feature maps with scales of 8, 16, 32, 64, and 128 after 5 deconvolution layers. Each deconvolution layer consists of a $3\times 3$ convolution layer, a batch normalization layer, a ReLU activation layer, and a deconvolution layer with a stride of 2. The local information extracted by the CNN is fused with the global information extracted by the TST at scales 16, 32, and 64, effectively modeling both temporal and spatial features. Finally, we used a deconvolution operation in the segmentation head, where the output channels were set equal to the number of classification types, to achieve the final winter wheat classification.
+>
+> 在解码器中，**首先**对时间维度T应用**全局自适应池化** （`GAP`）操作，实现与TST输出通道的融合。解码器采用二维卷积，经过5层反卷积后生成8、16、32、64和128个尺度的特征图。每个反卷积层包含：$3\times 3$ 卷积层、批量归一化层、ReLU激活层及步长为2的反卷积层。在16、32、64尺度上，CNN提取的局部信息与TST提取的全局信息实现融合，有效建模时序与空间特征。**最终在分割头部采用反卷积操作，其输出通道数设置为分类类型数量，从而实现冬小麦的最终分类**。
+>
+> ---
+>
+> 原文对解码器的描述更偏向整体视角。其中提到的 ***全局自适应池化*** 操作，其实仅作用于最底层编码器的输出特征。结合后文“实现与 *TST* 输出通道的融合”的描述，可以推测该操作的作用是：在空间尺度上对齐处理后的特征张量与 *TST* 模块的输出，使二者能够在不同层次间逐一对应。因此，这里的尺度变化可能是：
+>
+> $$\begin{align*}(T \times H_L \times W_L \times C_L^\text{enc}) \to (H_L \times W_L \times C_L^\text{dec})\end{align*}$$
+>
+> GPT给出的解释是，这里针对时间维度的池化操作将时间维度由 $T$ 压缩到 $1$ ，实现了时间维度的降维，若没有其他操作，则 $C_L^\text{enc} = C_L^\text{dec}$ 。那么「**全局自适应池化** 」这一描述就存在问题（这里并没有体现自适应的特点），可能的解释有：
+>
+> GPT 的解释是：池化操作主要针对时间维度，将其由 $T$ 压缩至 $1$，实现时间维度的降维。如果不考虑额外的通道变换，那么 $C_L^\text{enc} = C_L^\text{dec}$。由此可见，论文中将该操作称为「**全局自适应池化**」可能存在一定歧义，因为其“自适应”的特性并未在文中充分体现。更合理的解释有两种可能：
+>
+> 1. **针对时间序列长度的自适应**：由于 *SITS* 数据的时间维度 $T$ 在不同任务中并不固定，模型需要能够在该位置动态调整池化尺度，从而对不同长度的输入序列保持适应性。
+>
+> 2. **理解偏差的可能性**：也可能是我对论文相关表述的理解存在不足。
+
+我们可以将 `GAP` 提取的特征理解为每个<u>通道</u>上的 ***时序聚合特征***（即时间维度被消除后得到的通道表征）；而跳跃连接的特征则可以看作每个<u>时间刻</u>的 ***通道聚合特征***（即通道维度被消除后得到的时间表征）。在这种设计下，二者拼接后的特征张量维度为：
+$$
+\begin{align*}
+
+\mathbf{X}_l^\text{skip} \in \mathbb{R}^{H_l \times W_l \times (C_l^\text{dec} + T)}
+
+\end{align*}
+$$
+总体来说，每个解码器单元可以解释为：使用 ***通道**聚合特征* 恢复对应尺度的 ***时序**聚合特征*（PS：这个解释是在太过牵强，有“拼积木”的嫌疑）。在将时序特征图转换成了形如 $H_l \times W_l \times (C_l^\text{dec} + T)$ 的三维特征图后，我们便可自然而然地将其用于 *UNet* 解码器的范式中，其实现细节参考上述论文描述。
+
+### 3. 实验数据
+
+*UTS-Former* 所使用的实验数据如下表所示：
+
+| <span style='white-space: nowrap'>要点</span> | 说明                                                         |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| 影像                                          | Sentinel-2影像，RGB、R1/2/3（红边）、NR（近红外）、SW1/2（短波红外） |
+| 分布                                          | 8个站点（6个作为训练样本，2个作为测试集），每个站点覆盖<u>**约**</u>为 $5000\times 5000$ 像素<br/><blockquote>由于每个站点覆盖范围面积类似，**训练样本**数与**测试集**数也应该大致为 $6:2$；</blockquote> |
+| 样本                                          | 3年<u>制图产品</u>（2020-2022）作为训练数据，根据 `patch_size=256`、`stride=128` 生成 $38,000^?$ 个训练样本（训练集:验证集 = $8:2$）<br/><blockquote>这里的 $38,000$ 是正确的数值，一个站点最多可分 $\left\lfloor (5000+128)/128\right\rfloor^2$ 个样本块，8个站点3年可生成 $40^2\times 8 \times 3 = 38400$ 个样本块（<span style='color: pink'>**该样本数不具备参考性**</span>）。</blockquote> |
+
+此外，论文还进行了详细的 ***对比实验***、***模块消融实验*** 以及 针对 *时间分辨率* 的消融实验，详细实验结果和分析请参考论文原文。
 
 ## 借物表
 
