@@ -204,3 +204,8 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: stellar
+
+feed:
+  type: rss
+  path: rss.xml
+  limit: 10
