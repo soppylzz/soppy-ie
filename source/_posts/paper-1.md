@@ -456,15 +456,15 @@ $$
 我们将 *空谱嵌入* 后的时间序列送入Transformer中提取时序特征，这样我们便得到了`patch`中心像素的 ***时空谱*** 特征。但论文又是如何实现模型训练的呢？原文描述如下：
 
 > Formally, given an unlabeled pre-training set ${x^{(1)}, \cdots,x^{(m)}}$ of $m$ samples. Let $v^{(s)} = \left[ v^{(s)}_1, \cdots, v^{(s)}_1 \right]$ be the reflectance time series associated  with the analyzed pixel of sample $x^{(s)}$. We use a single FC layer to map  the outputs of SITS-Former (i.e., $T^{(s)} = \left[ T^{(s)}_1, \cdots, T^{(s)}_N \right]$ ) into predictions, and use the L2 distance between the predictions and targets at all  masked positions as the loss function:
-> $$
-> \mathcal{L} = \sum_{s=1}^m \text{M}^{(s)} \odot \lVert \text{v}^{(s)} - \text{W}_\text{p}T^{(s)} \rVert_2
-> $$
+> 
+> $$\begin{align*}\mathcal{L} = \sum_{s=1}^m \text{M}^{(s)} \odot \lVert \text{v}^{(s)} - \text{W}_\text{p}T^{(s)} \rVert_2\end{align*}$$
+> 
 > where $W_p$ is a learnable weight matrix; $M^{(s)}$ is a binary vector cor responding to $x^{(s)}$, with its element of 1 indicating a timestep being  masked and 0 indicating non-masked; $\odot$ represents the element-wise  product; $‖\cdot‖_2$ represents $l_2$ norm. 
 >
 > 形式上，给定一个包含 $m$ 个样本的无标签预训练集 ${x^{(1)}, \cdots,x^{(m)}}$ 。设 $v^{(s)} = \left[ v^{(s)}_1, \cdots, v^{(s)}_1 \right]$ 为样本 $x^{(s)}$ 中被分析像素对应的<u>**反射率时间序列**</u>。我们采用单层全连接层将SITS-Former的输出（即 $T^{(s)} = \left[ T^{(s)}_1, \cdots, T^{(s)}_N \right]$ ）映射为预测值，并以所有遮罩位置上预测值与目标值的L2距离作为损失函数：
-> $$
-> \mathcal{L} = \sum_{s=1}^m \text{M}^{(s)} \odot \lVert \text{v}^{(s)} - \text{W}_\text{p}T^{(s)} \rVert_2
-> $$
+> 
+> $$\begin{align*}\mathcal{L} = \sum_{s=1}^m \text{M}^{(s)} \odot \lVert \text{v}^{(s)} - \text{W}_\text{p}T^{(s)} \rVert_2\end{align*}$$
+> 
 > 其中 $W_p$ 为可学习权重矩阵；$M^{(s)}$ 是对应于 $x^{(s)}$ 的二进制向量，其元素为 1 表示该时间步被遮蔽，0 表示未遮蔽；$\odot$ 表示元素级乘积；$‖\cdot‖_2$ 表示 $l_2$ 范数。
 
 其中，$m$ 实际上是用于预训练的样本数量，在训练时通常按 *batch* 切分后输入模型训练。$v^{(s)}$ 是 *token* 化后的时序数据，与Transformer输出的 $T^{(s)}$ 尺寸一致。而这里的<u>**全连接层**可以理解为将预测结果映射回真实数据空间的解码器</u>。
@@ -498,7 +498,7 @@ $$
 *  **图像块序列**：以待分类像素为中心的`patch`为划分的时序卫星影像数据。当我们对这个数据进行 *掩码* 时，实际上是将某一些时间刻的影像用 <span style='color: pink'>**噪声**</span> 代替，而不是掩盖`patch`中某些像素点的数据。
 * **剩余像素回归**：即没被掩码的时间刻的`patch`数据。
 
-需要注意的是，我们在将剩余像素输入Transformer回归时，实际上也将进行噪声掩码的数据也作为序列元素输入到模型当中。原文中对此掩码的描述为：对于每个时间序列， 在输入网络前会随机用特殊填充矩阵`[MASK]`替换一定比例（论文实现中屏蔽率设置为 $15\%$ ）的斑块。<u>该 填充矩阵与原始斑块维度相同</u>，并在所有被遮蔽的时间步间 ***共享***（即一个序列中所有被屏蔽时间步使用一个随机`[MASK]`矩阵代替）。`[ MASK]`的元素为来自**正态分布的随机数**。
+需要注意的是，我们在将剩余像素输入Transformer回归时，实际上也将进行噪声掩码的数据也作为序列元素输入到模型当中。原文中对此掩码的描述为：对于每个时间序列，在输入网络前会随机用特殊填充矩阵`[MASK]`替换一定比例（论文实现中屏蔽率设置为 $15\%$ ）的斑块。<u>该填充矩阵与原始斑块维度相同</u>，并在所有被遮蔽的时间步间 ***共享***（即一个序列中所有被屏蔽时间步使用一个随机`[MASK]`矩阵代替）。`[ MASK]`的元素为来自**正态分布的随机数**。
 
 而代理训练的训练目标则要求恢复所有被屏蔽时间步的分析像素，通过这种方式网络可以学习`patch`间的时空上下文关系以填补缺失内容。
 
