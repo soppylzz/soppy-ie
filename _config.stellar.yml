@@ -12,7 +12,7 @@ article:
 logo:
   subtitle: '欢迎来到我的博客！| 溜了溜了 =͟͟͞͞( •̀д•́)'
 menubar:
-  columns: 2
+  columns: 3
   items:
     - id: post
       theme: '#1BCDFC'
@@ -22,8 +22,13 @@ menubar:
     - id: about
       theme: '#3DC550'
       title: 关于
-      icon: solar:planet-bold-duotone
+      icon: solar:hashtag-square-bold
       url: /about/
+    - id: social
+      theme: '#F44336'
+      icon: solar:planet-bold-duotone
+      title: 社交
+      url: /friends/
 copycode:
   enable: true
 loading:
