@@ -33,7 +33,7 @@
     "probe-image-size": "^7.2.3"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.1",
+    "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^19.1.0",
     "@release-it/conventional-changelog": "^8.0.1",
     "commitizen": "^4.3.1",
