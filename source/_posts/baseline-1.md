@@ -325,7 +325,7 @@ self.conv = nn.Conv2d(
 
 #### 📼 ViT可视化
 
-本文还参考了其他研究，对 *ViT* **<u>的图像遮挡敏感性</u>**进行了分析。整个敏感度热力图的生成流程如下：
+本文还参考了其他研究，对 *ViT* 的<u>**图像遮挡敏感性**</u>进行了分析。整个敏感度热力图的生成流程如下：
 
 <img src="https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/image-20251210215202132.png" alt="image-20251210215202132" style="zoom: 25%;" />
 

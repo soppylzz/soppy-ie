@@ -10,10 +10,15 @@
 
 - title: 安知鱼 - 生活明朗 万物可爱
   url: https://blog.anheyu.com/
-  icon: https://blog.anheyu.com/img/siteicon/32.png
+  icon: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/anzhiyu_icon.png
   cover: https://index.anheyu.com/assets/images/myblog.png
 
 - title: POETIZE - 最美博客
   url: https://poetize.cn/
   icon: https://s1.ax1x.com/2022/11/10/z9E7X4.jpg
   cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/20250903194512006.png
+
+- title: Stonly's Blog
+  url: https://wwdx-cqu.github.io/
+  icon: https://wwdx-cqu.github.io/assets/img/favicons/favicon-96x96.png
+  cover: https://soppy-ie-1351762962.cos.ap-chongqing.myqcloud.com/soppy-ie/image-20251223135011825.png
