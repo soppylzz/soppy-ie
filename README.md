@@ -1,16 +1,15 @@
-# Soppy-ie
+# soppy-ie (legacy)
 
-> [!CAUTION]
->
-> 当前博客已弃用Github Pages+Actions的部署方式，网站内容已转移到 [Soppy的小屋](https://note.soppy.site)。
+[![GitHub release](https://img.shields.io/github/v/release/soppylzz/soppy-ie)](https://github.com/soppylzz/soppy-ie/releases)
 
-## 内容
+The archived source of Soppy's former Hexo blog. It contains research and technical posts, site configuration, and the previous GitHub Pages deployment workflow.
 
-本项目的主要工作有：
+**Read the current site at [Soppy's Home](https://note.soppy.site).** This repository is no longer used to deploy the blog.
 
-* **🖊️ 编写博客**：编写<u>科研</u>、<u>技术</u>博客；
-* **🏚️ 已废弃**：~~配置Github Actions~~，~~客制化`hexo-theme-cactus`~~
+## What is preserved here
 
-## 评论插件
+- Blog posts and site content under `source/`
+- Hexo configuration and the Stellar theme settings
+- Beaudar comment integration and the former deployment workflow
 
-使用 [Beaudar - 表达](https://beaudar.lipk.org/) 这一评论插件。使用`hexo-theme-stellar`提供的评论插件配置：[Stellar: 评论插件配置](https://xaoxuu.com/wiki/stellar/comments/)。
+For the current articles and site updates, visit [note.soppy.site](https://note.soppy.site).
